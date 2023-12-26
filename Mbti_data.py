@@ -1,30 +1,143 @@
-#import tweepy
-import sys
-import re
-import string
-import pickle
-import os
-
-import numpy as np
 import pandas as pd
+import numpy as np
+import re
 import matplotlib.pyplot as plt
+#import seaborn as sns
 
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
-from nltk.stem import PorterStemmer
+############################## 讀取Kaggle資料   ##############################
+csv_file_path = "./MBTI_project/data/archive/mbti_1.csv"
+data = pd.read_csv(csv_file_path)
+#print(data.head(5))
 
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, recall_score, f1_score
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-from sklearn.model_selection import train_test_split, cross_val_score
-#from sklearn.externals import joblib
+data_list = []
+for row in data["posts"]:
+    parts = row.split("|||")
+    data_list.append(parts)
+#print(data_list[7]) #包含了分割後的结果列表
 
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
-#from sklearn.svm import SVCsmatizermetext
-#import CountVectorizer, TfidfTransformerusion_matrix, accuracy_score, classification_report, recall_score, cross_val_scorebliMultinomialNBdomForestClassifier, ExtraTreesClassifiersmatizermetext 
 
-data = np.readline(".\data\archive\mbti_1.csv")
+############################## 1.先看資料的分布情形 ##############################
+
+#設圖形大小
+plt.figure(figsize=(40, 20))
+# 设置 x 軸
+plt.xticks(fontsize=16, rotation=0)
+# 设置 y 軸
+plt.yticks(fontsize=16, rotation=0)
+# 使用 Matplotlib 的 bar 
+type_counts = data['type'].value_counts()#每個類型不同的數量
+#colors = [plt.cm.viridis(np.random.random()) for _ in range(len(type_counts))] #每個類型隨機對一個顏色
+unique_colors = set()
+colors = []
+for _ in range(len(type_counts)):
+    while True:
+        random_color = plt.cm.viridis(np.random.random())
+        if random_color not in unique_colors:
+            unique_colors.add(random_color)
+            colors.append(random_color)
+            break
+plt.bar(type_counts.index, type_counts, color=colors)
+# 设置 x 轴標籤
+plt.xlabel('type', fontsize=16)
+plt.ylabel('number', fontsize=16)
+# 顯示圖形
+##plt.show()
+
+
+############################## 文本清理 ##############################
+import time
+import nltk
+
+##### Compute list of subject with Type | list of comments 
+
+from nltk.corpus import stopwords 
+from nltk import word_tokenize
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+from nltk import download
+#nltk.download('stopwords')
+
+
+# Lemmatizer | Stemmatizer
+stemmer = PorterStemmer()
+lemmatiser = WordNetLemmatizer()
+
+# Cache the stop words for speed 
+cachedStopWords = stopwords.words("english")
+
+# 创建一个空列表，用于存储预处理后的帖子
+preprocessed_posts = []
+
+# 初始化停用词和词干提取器
+cachedStopWords = stopwords.words("english")
+stemmer = PorterStemmer()
+
+# 遍历数据中的每一行
+for index, row in data.iterrows():
+    # 获取当前行的 'posts' 列的值
+    Post = row['posts']
+    # List all urls
+    urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', Post)
+    # Remove urls
+    temp = re.sub('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', 'link', Post)
+    # Keep only words
+    temp = re.sub("[^a-zA-Z]", " ", temp)
+    # Remove spaces > 1
+    temp = re.sub(' +', ' ', temp).lower()
+    # Remove stopwords and lematize
+    stemmed_words = [stemmer.stem(word) for word in temp.split(' ') if word not in cachedStopWords]
+    result = " ".join(stemmed_words)
+    #print("\nBefore preprocessing:\n\n", OnePost[0:500])
+    #print("\nAfter preprocessing:\n\n", temp[0:500])
+    #print("\nList of urls:")
+
+############################## 正則表達式 ##############################
+
+
+
+
+
+
+############################## 2.把文本標籤數字化 ##############################
+from sklearn.preprocessing import LabelEncoder
+unique_type_list = ['INFJ', 'ENTP', 'INTP', 'INTJ', 'ENTJ', 'ENFJ', 'INFP', 'ENFP',
+       'ISFP', 'ISTP', 'ISFJ', 'ISTJ', 'ESTP', 'ESFP', 'ESTJ', 'ESFJ']
+lab_encoder = LabelEncoder().fit(unique_type_list)
+print(lab_encoder.transform(['INFJ']))
+
+data['ie'] = data.type
+data['ns'] = data.type
+data['ft'] = data.type
+data['pj'] = data.type
+
+for i, t in enumerate(data.type):
+    if 'I' in t:
+        data.ie[i] = 'I'
+    elif 'E' in t:
+        data.ie[i] = 'E'
+        
+    if 'N' in t:
+        data.ns[i] = 'N'
+    elif 'S' in t:
+        data.ns[i] = 'S'
+        
+    if 'F' in t:
+        data.ft[i] = 'F'
+    elif 'T' in t:
+        data.ft[i] = 'T'
+        
+    if 'P' in t:
+        data.pj[i] = 'P'
+    elif 'J' in t:
+        data.pj[i] = 'J'
+
+posts = data.posts.values
+yIE = data.ie.values
+yNS = data.ns.values
+yFT = data.ft.values
+yPJ = data.pj.values
+y = data.type
+
+
 
 '''
 #https://www.kaggle.com/code/rantan/multiclass-and-multi-output-classification#Text-Analysis-with-(MBTI)-Myers-Briggs-Personality-Type-Dataset
