@@ -5,43 +5,15 @@ import matplotlib.pyplot as plt
 #import seaborn as sns
 
 ############################## 讀取Kaggle資料   ##############################
-csv_file_path = "./MBTI_project/data/archive/mbti_1.csv"
+csv_file_path = "./data/archive/mbti_1.csv"
 data = pd.read_csv(csv_file_path)
-#print(data.head(5))
+###print(data.head(5))
 
 data_list = []
 for row in data["posts"]:
     parts = row.split("|||")
     data_list.append(parts)
 #print(data_list[7]) #包含了分割後的结果列表
-
-
-############################## 1.先看資料的分布情形 ##############################
-
-#設圖形大小
-plt.figure(figsize=(40, 20))
-# 设置 x 軸
-plt.xticks(fontsize=16, rotation=0)
-# 设置 y 軸
-plt.yticks(fontsize=16, rotation=0)
-# 使用 Matplotlib 的 bar 
-type_counts = data['type'].value_counts()#每個類型不同的數量
-#colors = [plt.cm.viridis(np.random.random()) for _ in range(len(type_counts))] #每個類型隨機對一個顏色
-unique_colors = set()
-colors = []
-for _ in range(len(type_counts)):
-    while True:
-        random_color = plt.cm.viridis(np.random.random())
-        if random_color not in unique_colors:
-            unique_colors.add(random_color)
-            colors.append(random_color)
-            break
-plt.bar(type_counts.index, type_counts, color=colors)
-# 设置 x 轴標籤
-plt.xlabel('type', fontsize=16)
-plt.ylabel('number', fontsize=16)
-# 顯示圖形
-##plt.show()
 
 
 ############################## 文本清理 ##############################
@@ -90,20 +62,43 @@ for index, row in data.iterrows():
     #print("\nAfter preprocessing:\n\n", temp[0:500])
     #print("\nList of urls:")
 
-############################## 正則表達式 ##############################
 
+############################## 1.先看資料的分布情形 ##############################
 
+#設圖形大小
+plt.figure(figsize=(40, 20))
+# 设置 x 軸
+plt.xticks(fontsize=16, rotation=0)
+# 设置 y 軸
+plt.yticks(fontsize=16, rotation=0)
+# 使用 Matplotlib 的 bar 
+type_counts = data['type'].value_counts()#每個類型不同的數量
+#colors = [plt.cm.viridis(np.random.random()) for _ in range(len(type_counts))] #每個類型隨機對一個顏色
+unique_colors = set()
+colors = []
+for _ in range(len(type_counts)):
+    while True:
+        random_color = plt.cm.viridis(np.random.random())
+        if random_color != unique_colors:
+            unique_colors.add(random_color)
+            colors.append(random_color)
+            break
+plt.bar(type_counts.index, type_counts, color=colors)
+# 设置 x 轴標籤
+plt.xlabel('type', fontsize=16)
+plt.ylabel('number', fontsize=16)
 
+# 顯示圖形
+###plt.show()
 
-
-
-############################## 2.把文本標籤數字化 ##############################
+############################## 把文本標籤數字化 ##############################
 from sklearn.preprocessing import LabelEncoder
 unique_type_list = ['INFJ', 'ENTP', 'INTP', 'INTJ', 'ENTJ', 'ENFJ', 'INFP', 'ENFP',
        'ISFP', 'ISTP', 'ISFJ', 'ISTJ', 'ESTP', 'ESFP', 'ESTJ', 'ESFJ']
 lab_encoder = LabelEncoder().fit(unique_type_list)
 print(lab_encoder.transform(['INFJ']))
 
+#创建了四个新的特征列 ie、ns、ft 和 pj，这些特征代表了性格类型的不同维度（I/E、N/S、F/T、P/J）
 data['ie'] = data.type
 data['ns'] = data.type
 data['ft'] = data.type
@@ -136,6 +131,20 @@ yNS = data.ns.values
 yFT = data.ft.values
 yPJ = data.pj.values
 y = data.type
+
+print(data.ie.value_counts(), end='\n\n')
+print(data.ns.value_counts(), end='\n\n')
+print(data.ft.value_counts(), end='\n\n')
+print(data.pj.value_counts(), end='\n\n')
+plt.figure()
+data.ie.hist(); plt.show()
+data.ns.hist(); plt.show()
+data.ft.hist(); plt.show()
+data.pj.hist(); plt.show()
+
+##############################正則表達式 ##############################
+
+
 
 
 
