@@ -17,6 +17,17 @@ for row in data["posts"]:
 
 
 ############################## 文本清理 ##############################
+'''注意:
+1.資料有:非英文字、格行 的問題
+2.把和類型有關字 都刪除掉
+3.把無法識別字，以空格取代
+4.留住標點符號 =>為了他更好判斷
+5.文句限定為50個英文單字,含標點符號 => 其餘的要截長補短
+6.把csv加上type(共兩格)，然後合併成一個檔案，合併檔(類型、文章、隨機放入)
+7.其餘:清除網址,去除多餘的空格,去除停詞,构建正则表达式，使用 | 分隔不要的词语
+8.
+'''
+print()
 import time
 import nltk
 
@@ -53,6 +64,7 @@ for index, row in data.iterrows():
     temp = re.sub('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', 'link', Post)
     # Keep only words #把非字母的換成空格
     temp = re.sub("[^a-zA-Z]", " ", temp)
+    
     not_words = ["infp","infj","intj","intp","isfp","isfj","istj","istp","enfp","enfj","entj","entp","esfp","esfj","estj","estp","<type>"]
     # 构建正则表达式，使用 | 分隔不要的词语
     not_words_regex = '|'.join(map(re.escape, not_words))
@@ -90,7 +102,7 @@ for _ in range(len(type_counts)):
             break
 plt.bar(type_counts.index, type_counts, color=colors)
 # 设置 x 轴標籤
-plt.xlabel('type', fontsize=16)
+plt.xlabel('type',fontsize=16)
 plt.ylabel('number', fontsize=16)
 
 # 顯示圖形

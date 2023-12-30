@@ -11,7 +11,7 @@ def get_bert_model(args, num_labels):
               num_labels=num_labels)
 	return model
     
-
+#優化器=>主要目的還是在針對預處理bert model進行參數上的修正，希望讓他更吻合
 def get_optimizer(args, model, num_train_optimization_steps):
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']

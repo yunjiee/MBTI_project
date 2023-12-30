@@ -13,8 +13,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""BERT finetuning runner."""
+"""BERT finetuning runner.微調"""
+'''理想狀態來說: 應該只要給他下面兩個資料data_dir和output_dir，就可以先跑跑看
+parser.add_argument("--data_dir", default="./", type=str)
+parser.add_argument("--output_dir", default="./output/", type=str)
 
+=>都測試好後,再來看base-large的部分
+'''
 from __future__ import absolute_import, division, print_function
 
 import argparse
