@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 #import seaborn as sns
 
 ############################## 讀取Kaggle資料   ##############################
-csv_file_path = "./data/archive/mbti_1.csv"
+csv_file_path = "d:/project/MBTI_project/data/archive/mbti_1.csv"
 data = pd.read_csv(csv_file_path)
 ###print(data.head(5))
 
@@ -49,13 +49,18 @@ for index, row in data.iterrows():
     Post = row['posts']
     # List all urls
     urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', Post)
-    # Remove urls
+    # Remove urls #清除網址
     temp = re.sub('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', 'link', Post)
-    # Keep only words
+    # Keep only words #把非字母的換成空格
     temp = re.sub("[^a-zA-Z]", " ", temp)
-    # Remove spaces > 1
+    not_words = ["infp","infj","intj","intp","isfp","isfj","istj","istp","enfp","enfj","entj","entp","esfp","esfj","estj","estp","<type>"]
+    # 构建正则表达式，使用 | 分隔不要的词语
+    not_words_regex = '|'.join(map(re.escape, not_words))
+    # 使用正则表达式进行替换
+    temp = re.sub(not_words_regex, '', temp)
+    # Remove spaces > 1 #去除多餘的空格
     temp = re.sub(' +', ' ', temp).lower()
-    # Remove stopwords and lematize
+    # Remove stopwords and lematize #去除停詞
     stemmed_words = [stemmer.stem(word) for word in temp.split(' ') if word not in cachedStopWords]
     result = " ".join(stemmed_words)
     #print("\nBefore preprocessing:\n\n", OnePost[0:500])
@@ -96,7 +101,7 @@ from sklearn.preprocessing import LabelEncoder
 unique_type_list = ['INFJ', 'ENTP', 'INTP', 'INTJ', 'ENTJ', 'ENFJ', 'INFP', 'ENFP',
        'ISFP', 'ISTP', 'ISFJ', 'ISTJ', 'ESTP', 'ESFP', 'ESTJ', 'ESFJ']
 lab_encoder = LabelEncoder().fit(unique_type_list)
-print(lab_encoder.transform(['INFJ']))
+#print(lab_encoder.transform(['INFJ']))
 
 #创建了四个新的特征列 ie、ns、ft 和 pj，这些特征代表了性格类型的不同维度（I/E、N/S、F/T、P/J）
 data['ie'] = data.type
@@ -136,6 +141,7 @@ print(data.ie.value_counts(), end='\n\n')
 print(data.ns.value_counts(), end='\n\n')
 print(data.ft.value_counts(), end='\n\n')
 print(data.pj.value_counts(), end='\n\n')
+
 plt.figure()
 data.ie.hist(); plt.show()
 data.ns.hist(); plt.show()
