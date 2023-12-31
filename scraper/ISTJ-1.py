@@ -2,11 +2,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
 import pandas as pd
 
-def crawl_enfp_forum(url, num_pages=2):
+def crawl_istj_forum(url, num_pages=2):
     driver = webdriver.Chrome()  # 請根據你使用的瀏覽器選擇對應的WebDriver
     driver.get(url)
 
@@ -28,28 +27,21 @@ def crawl_enfp_forum(url, num_pages=2):
             thread_url_relative = thread_link['href']
             thread_url = f"https://www.personalitycafe.com/{thread_url_relative}"
 
-            try:
             # 進入主題連結，進入帖子頁面
-                driver.get(thread_url)
-                WebDriverWait(driver, 30).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, 'message'))
-                )
-                thread_posts_soup = BeautifulSoup(driver.page_source, 'html.parser')
+            driver.get(thread_url)
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, 'message'))
+            )
+            thread_posts_soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-                # 找到第一個帖子的發文者和內容
-                post_content_element = thread_posts_soup.find('div', class_='bbWrapper')
+            # 找到第一個帖子的發文者和內容
+            post_content_element = thread_posts_soup.find('div', class_='bbWrapper')
 
-                post_content = post_content_element.text.strip() if post_content_element else ''
+            post_content = post_content_element.text.strip() if post_content_element else ''
 
-                posts_data.append({
-                    'Content': post_content
-                })
-            except TimeoutException:
-                print(f"TimeoutException: Timed out on thread {i + 1}. Skipping...")
-                pass
-            finally:
-                # 在這裡添加清理或其他操作
-                pass
+            posts_data.append({
+                'Content': post_content
+            })
 
         #轉到下一頁
         try:
@@ -67,13 +59,14 @@ def crawl_enfp_forum(url, num_pages=2):
 
     return posts_data
 
-# 爬取 ENFP 類型的帖子資料
-enfp_forum_url = "https://www.personalitycafe.com/forums/enfp-forum-the-inspirers.19/"
-enfp_posts_data = crawl_enfp_forum(enfp_forum_url, num_pages=2)
+# 爬取 ISTJ 類型的帖子資料
+istj_forum_url = "https://www.personalitycafe.com/forums/istj-forum-the-duty-fulfillers.5/"
+istj_posts_data = crawl_istj_forum(istj_forum_url, num_pages=2)
 
 # 將爬取到的資料轉換成 DataFrame
-df = pd.DataFrame(enfp_posts_data)
+df = pd.DataFrame(istj_posts_data)
 
 # 將 DataFrame 寫入 CSV 檔案
-csv_file_path = "data_personality/enfp_posts_data.csv"
+csv_file_path = "data_personality/istj_posts_data.csv"
 df.to_csv(csv_file_path, index=False)
+

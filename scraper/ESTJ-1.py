@@ -6,7 +6,7 @@ from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
 import pandas as pd
 
-def crawl_enfp_forum(url, num_pages=2):
+def crawl_estj_forum(url, num_pages=2):
     driver = webdriver.Chrome()  # 請根據你使用的瀏覽器選擇對應的WebDriver
     driver.get(url)
 
@@ -67,13 +67,13 @@ def crawl_enfp_forum(url, num_pages=2):
 
     return posts_data
 
-# 爬取 ENFP 類型的帖子資料
-enfp_forum_url = "https://www.personalitycafe.com/forums/enfp-forum-the-inspirers.19/"
-enfp_posts_data = crawl_enfp_forum(enfp_forum_url, num_pages=2)
+# 爬取 ESTJ 類型的帖子資料
+estj_forum_url = "https://www.personalitycafe.com/forums/estj-forum-the-guardians.6/"
+estj_posts_data = crawl_estj_forum(estj_forum_url, num_pages=2)
 
 # 將爬取到的資料轉換成 DataFrame
-df = pd.DataFrame(enfp_posts_data)
+df = pd.DataFrame(estj_posts_data)
 
 # 將 DataFrame 寫入 CSV 檔案
-csv_file_path = "data_personality/enfp_posts_data.csv"
+csv_file_path = "data_personality/estj_posts_data.csv"
 df.to_csv(csv_file_path, index=False)
