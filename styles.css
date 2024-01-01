@@ -1,0 +1,21 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  #articleInput {
+    width: 70%;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  #submitButton {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  #errorMessage {
+    color: red;
+  }
+  
