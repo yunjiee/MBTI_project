@@ -4,26 +4,32 @@ import sys
 import re
 from cleaning import clean
 
+#表示用於單個訓練或測試的例子
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
 
     def __init__(self, guid, text, label=None):
-        self.guid = guid
+        self.guid = guid #self:看guid的屬性和方法#guid有點類似於地標
         self.text = text
         self.label = label
 
-
+# 定義DataProcessor類，作為序列分類數據集的數據轉換器的基類
 class DataProcessor(object):
     """Base class for data converters for sequence classification data sets."""
-
+    # 用於獲取訓練集的InputExample的集合，需要在子類中實現
     def get_train_examples(self, data_dir):
         """Gets a collection of `InputExample`s for the train set."""
+        #獲取訓練集的`InputExample`集合
         raise NotImplementedError()
+#當代碼執行到 raise 語句時，指定的例外會被觸發，並且通常會中斷當前執行的函數或方法
+#NotImplementedError通常用於表示某個方法或功能還沒有被實現
 
+    # 用於獲取開發（驗證）集的InputExample的集合，需要在子類中實現
     def get_dev_examples(self, data_dir):
         """Gets a collection of `InputExample`s for the dev set."""
         raise NotImplementedError()
 
+    # 用於獲取該數據集的標籤列表，需要在子類中實現
     def get_labels(self):
         """Gets the list of labels for this data set."""
         raise NotImplementedError()
