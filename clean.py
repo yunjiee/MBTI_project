@@ -1,12 +1,61 @@
-'''import re
+'''
+import re
 import pandas as pd
 from nltk.corpus import stopwords 
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 from nltk import download
 from nltk import punkt
+'''
 import random
+import pandas as pd
+import re
+from nltk.tokenize import word_tokenize
+from nltk.stem import PorterStemmer
+from nltk.corpus import stopwords
 
+# 初始化停用词和词干提取器
+cachedStopWords = stopwords.words("english")
+stemmer = PorterStemmer()
+
+# 设置单个帖子的单词限制
+MAX_WORDS = 50
+
+# 读取CSV文件
+file_name = '.\MBTI_project\data_personality\enfj_posts_data.csv'
+data = pd.read_csv(file_name)  # 替换为你的数据文件路径
+type_from_file = file_name.split('\\')[-1].split('_')[0]  # 从文件名提取MBTI类型
+
+# 预处理函数
+def preprocess_text(text):
+    # 确保文本是字符串类型
+    text = str(text).lower()
+    # 移除URLs
+    text = re.sub(r'http\S+', ' ', text)
+    text = text.replace("'", " ")
+    # 保留字母和标点符号
+    text = re.sub("[^a-zA-Z.,!?']", " ", text)
+    not_words = ["infp", "infj", "intj", "intp", "isfp", "isfj", "istj", "istp", "enfp", "enfj", "entj", "entp", "esfp", "esfj", "estj", "estp", "<type>"]
+    # 使用正则表达式进行替换
+    text = re.sub('|'.join(map(re.escape, not_words)), '', text)
+    words = word_tokenize(text)
+    if len(words) > MAX_WORDS:
+        words = words[:MAX_WORDS]
+    else:
+        words += [' '] * (MAX_WORDS - len(words))
+    words = [stemmer.stem(word) for word in words if word.lower() not in cachedStopWords]
+    return ' '.join(words)
+
+# 应用分割和预处理函数
+split_texts = data['Content'].astype(str).apply(preprocess_text)
+
+# 打印处理后的前几行，以检查结果
+print(split_texts.head())
+
+# 保存到新的CSV文件
+data.to_csv('processed_data.csv', index=False)
+
+'''
 # 初始化停用词和词干提取器
 #nltk.download('stopwords')
 #nltk.download('punkt')
@@ -92,6 +141,7 @@ data = data[['type', 'processed_content']]
 # 保存到新的CSV文件
 data.to_csv('processed_data.csv', index=False)
 '''
+'''
 import pandas as pd
 import re
 def preprocess_text(cell):
@@ -138,4 +188,4 @@ processed_file_path
 
 
 #file_name = '.\MBTI_project\data_personality\enfj_posts_data.csv'
-
+'''
