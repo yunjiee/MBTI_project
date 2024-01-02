@@ -1,4 +1,4 @@
-import re
+'''import re
 import pandas as pd
 from nltk.corpus import stopwords 
 from nltk.stem import PorterStemmer
@@ -51,6 +51,7 @@ def preprocess_text(text):
     words = [stemmer.stem(word) for word in words if word.lower() not in cachedStopWords]
     # 重新组合为单个字符串
     return ' '.join(words)
+
 # 分割文本并应用预处理
 def split_and_preprocess(text):
     words = word_tokenize(text)
@@ -75,7 +76,7 @@ print(processed_df.head())
 
 # 保存到新的CSV文件
 processed_df.to_csv('processed_data.csv', index=False)
-'''
+
 # 应用预处理函数到DataFrame的每一行
 data['processed_content'] = data['Content'].apply(preprocess_text)
 
@@ -91,3 +92,50 @@ data = data[['type', 'processed_content']]
 # 保存到新的CSV文件
 data.to_csv('processed_data.csv', index=False)
 '''
+import pandas as pd
+import re
+def preprocess_text(cell):
+    # 去除跨行符号并转换为小写
+    cell = re.sub(r'\s+', ' ', cell).lower()
+    # 替换非英文字符为一个空格
+    cell = re.sub(r'[^a-z .]', ' ', cell)
+    cell   = re.sub("[^a-zA-Z.,!?']", " ", cell )
+
+    # 根据句号进行分割
+    sentences = cell.split('.')
+    processed_cells = []
+
+    for sentence in sentences:
+        words = sentence.split()
+        # 分割超过50个单词的句子
+        while words:
+            processed_cells.append(' '.join(words[:50]))
+            words = words[50:]
+
+    return processed_cells
+
+# 读取CSV文件
+file_name = '.\MBTI_project\data_personality\enfj_posts_data.csv'
+data = pd.read_csv(file_name)
+
+# 确保 'Content' 列是字符串类型
+data['Content'] = data['Content'].astype(str)
+
+# 应用预处理函数并扁平化结果
+processed_cells = data['Content'].apply(preprocess_text)
+flattened_cells = [cell for sublist in processed_cells for cell in sublist]
+
+# 创建新的DataFrame
+processed_data = pd.DataFrame({'processed_content': flattened_cells})
+
+# 保存处理后的数据
+processed_file_path = '.\MBTI_project\data_personality\processed_enfj_posts_data.csv'
+processed_data.to_csv(processed_file_path, index=False)
+
+processed_file_path
+
+
+
+
+#file_name = '.\MBTI_project\data_personality\enfj_posts_data.csv'
+
