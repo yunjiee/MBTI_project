@@ -27,7 +27,7 @@ for row in data["posts"]:
 7.其餘:清除網址,去除多餘的空格,去除停詞,构建正则表达式，使用 | 分隔不要的词语
 8.
 '''
-print()
+
 import time
 import nltk
 

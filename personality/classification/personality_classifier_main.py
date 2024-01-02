@@ -20,6 +20,7 @@ parser.add_argument("--output_dir", default="./output/", type=str)
 
 =>都測試好後,再來看base-large的部分
 '''
+#用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
 from __future__ import absolute_import, division, print_function
 
 import argparse
@@ -52,22 +53,25 @@ from bert_model import get_bert_model, get_optimizer
 
 
 def main():
+    #創建一個解析器，用於處理命令行參數
     parser = argparse.ArgumentParser()
+    #添加各種命令行參數
+    #调用定义了一个命令行参数的规则，包括如何解析该参数以及该参数的一些元数据
+    #参数名称以两个连字符（--）开头，它被视为一个可选参数(是那些在命令行中可以省略的参数。意味着在命令行中使用这些参数时，需要使用其完整的名称)
+    parser.add_argument("--data_dir", default="./", type=str)#數據目錄
+    parser.add_argument("--bert_model", default="bert-base-uncased", type=str)#使用的bert模型
+    parser.add_argument("--output_dir", default="./output/", type=str)#輸出目錄
 
-    parser.add_argument("--data_dir", default="./", type=str)
-    parser.add_argument("--bert_model", default="bert-base-uncased", type=str)
-    parser.add_argument("--output_dir", default="./output/", type=str)
+    parser.add_argument("--cache_dir", default="", type=str)#緩存目錄
+    parser.add_argument("--max_seq_length", default=128, type=int)#最大序列長度
 
-    parser.add_argument("--cache_dir", default="", type=str)
-    parser.add_argument("--max_seq_length", default=128, type=int)
-
-    parser.add_argument("--do_train", action='store_true')
-    parser.add_argument("--do_eval", action='store_true')
-    parser.add_argument("--do_lower_case", action='store_true')
+    parser.add_argument("--do_train", action='store_true')#是否經過訓練
+    parser.add_argument("--do_eval", action='store_true')#是否進行評估
+    parser.add_argument("--do_lower_case", action='store_true')#是否將文本轉為小寫
 
     parser.add_argument("--train_batch_size", default=32, type=int)
-    parser.add_argument("--eval_batch_size", default=8, type=int)
-    parser.add_argument("--learning_rate", default=5e-5, type=float)
+    parser.add_argument("--eval_batch_size", default=8, type=int)#評估時的批次大小
+    parser.add_argument("--learning_rate", default=5e-5, type=float)#學習率
 
     parser.add_argument("--num_train_epochs", default=3, type=int)
     parser.add_argument("--warmup_proportion", default=0.1, type=float)
@@ -78,7 +82,9 @@ def main():
     parser.add_argument('--gradient_accumulation_steps', type=int, default=1)
     
     parser.add_argument('--mode', default="ALL", type=str)
-
+    #用于解析命令行参数(将每个参数与之前通过 add_argument 定义的参数进行匹配，并基于提供的信息对这些参数进行适当的类型转换)
+    #如果命令行参数不符合预定义的规则，parse_args()会自动显示错误信息并退出程序
+    #这在创建需要用户输入参数的脚本时非常有用。
     args = parser.parse_args()
 
 
