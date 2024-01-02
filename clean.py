@@ -92,51 +92,50 @@ data = data[['type', 'processed_content']]
 # 保存到新的CSV文件
 data.to_csv('processed_data.csv', index=False)
 '''
-
 import pandas as pd
 import re
-
 def preprocess_text(cell):
-    # 转换为字符串类型
-    cell = str(cell)
     # 去除跨行符号并转换为小写
-    cell = cell.replace('\n', ' ').replace('\r', ' ').lower()
+    cell = re.sub(r'\s+', ' ', cell).lower()
     # 替换非英文字符为一个空格
     cell = re.sub(r'[^a-z .]', ' ', cell)
-    print(cell)
-
-    print("--------------------------------")
+    cell   = re.sub("[^a-zA-Z.,!?']", " ", cell )
 
     # 根据句号进行分割
     sentences = cell.split('.')
-    processed_sentences = []
+    processed_cells = []
 
     for sentence in sentences:
         words = sentence.split()
-        # 按照单词数量对句子进行处理
-        if len(words) > 90:
-            # 大于90个单词，分为多个部分
-            for i in range(0, len(words), 50):
-                processed_sentences.append(' '.join(words[i:i+50]))
-        elif len(words) >= 50:
-            # 50到90个单词之间，只取前50个单词
-            processed_sentences.append(' '.join(words[:50]))
-        else:
-            # 少于50个单词，填充空格
-            processed_sentences.append(' '.join(words) + ' ' * (50 - len(words)))
-    print(processed_sentences)    
-    return ' '.join(processed_sentences)
+        # 分割超过50个单词的句子
+        while words:
+            processed_cells.append(' '.join(words[:50]))
+            words = words[50:]
 
+    return processed_cells
 
 # 读取CSV文件
 file_name = '.\MBTI_project\data_personality\enfj_posts_data.csv'
-data = pd.read_csv(file_name)  # 替换为你的数据文件路径
+data = pd.read_csv(file_name)
 
-# 应用预处理函数
-data['processed_content'] = data['Content'].apply(preprocess_text)
+# 确保 'Content' 列是字符串类型
+data['Content'] = data['Content'].astype(str)
+
+# 应用预处理函数并扁平化结果
+processed_cells = data['Content'].apply(preprocess_text)
+flattened_cells = [cell for sublist in processed_cells for cell in sublist]
+
+# 创建新的DataFrame
+processed_data = pd.DataFrame({'processed_content': flattened_cells})
 
 # 保存处理后的数据
-processed_file_path = './processed_enfj_posts_data.csv'
-data.to_csv(processed_file_path, index=False)
+processed_file_path = '.\MBTI_project\data_personality\processed_enfj_posts_data.csv'
+processed_data.to_csv(processed_file_path, index=False)
 
 processed_file_path
+
+
+
+
+#file_name = '.\MBTI_project\data_personality\enfj_posts_data.csv'
+
