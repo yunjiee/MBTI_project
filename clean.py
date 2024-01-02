@@ -1,4 +1,4 @@
-import re
+'''import re
 import pandas as pd
 from nltk.corpus import stopwords 
 from nltk.stem import PorterStemmer
@@ -51,6 +51,7 @@ def preprocess_text(text):
     words = [stemmer.stem(word) for word in words if word.lower() not in cachedStopWords]
     # 重新组合为单个字符串
     return ' '.join(words)
+
 # 分割文本并应用预处理
 def split_and_preprocess(text):
     words = word_tokenize(text)
@@ -75,7 +76,7 @@ print(processed_df.head())
 
 # 保存到新的CSV文件
 processed_df.to_csv('processed_data.csv', index=False)
-'''
+
 # 应用预处理函数到DataFrame的每一行
 data['processed_content'] = data['Content'].apply(preprocess_text)
 
@@ -91,3 +92,51 @@ data = data[['type', 'processed_content']]
 # 保存到新的CSV文件
 data.to_csv('processed_data.csv', index=False)
 '''
+
+import pandas as pd
+import re
+
+def preprocess_text(cell):
+    # 转换为字符串类型
+    cell = str(cell)
+    # 去除跨行符号并转换为小写
+    cell = cell.replace('\n', ' ').replace('\r', ' ').lower()
+    # 替换非英文字符为一个空格
+    cell = re.sub(r'[^a-z .]', ' ', cell)
+    print(cell)
+
+    print("--------------------------------")
+
+    # 根据句号进行分割
+    sentences = cell.split('.')
+    processed_sentences = []
+
+    for sentence in sentences:
+        words = sentence.split()
+        # 按照单词数量对句子进行处理
+        if len(words) > 90:
+            # 大于90个单词，分为多个部分
+            for i in range(0, len(words), 50):
+                processed_sentences.append(' '.join(words[i:i+50]))
+        elif len(words) >= 50:
+            # 50到90个单词之间，只取前50个单词
+            processed_sentences.append(' '.join(words[:50]))
+        else:
+            # 少于50个单词，填充空格
+            processed_sentences.append(' '.join(words) + ' ' * (50 - len(words)))
+    print(processed_sentences)    
+    return ' '.join(processed_sentences)
+
+
+# 读取CSV文件
+file_name = '.\MBTI_project\data_personality\enfj_posts_data.csv'
+data = pd.read_csv(file_name)  # 替换为你的数据文件路径
+
+# 应用预处理函数
+data['processed_content'] = data['Content'].apply(preprocess_text)
+
+# 保存处理后的数据
+processed_file_path = './processed_enfj_posts_data.csv'
+data.to_csv(processed_file_path, index=False)
+
+processed_file_path
