@@ -3,7 +3,7 @@ import numpy as np
 import re
 import matplotlib.pyplot as plt
 #import seaborn as sns
-
+'''
 ############################## 讀取Kaggle資料   ##############################
 csv_file_path = "d:/project/MBTI_project/data/archive/mbti_1.csv"
 data = pd.read_csv(csv_file_path)
@@ -17,7 +17,9 @@ for row in data["posts"]:
 
 
 ############################## 文本清理 ##############################
-'''注意:
+'''
+'''
+注意:
 1.資料有:非英文字、格行 的問題
 2.把和類型有關字 都刪除掉
 3.把無法識別字，以空格取代
@@ -27,7 +29,7 @@ for row in data["posts"]:
 7.其餘:清除網址,去除多餘的空格,去除停詞,构建正则表达式，使用 | 分隔不要的词语
 8.
 '''
-
+'''
 import time
 import nltk
 
@@ -78,10 +80,11 @@ for index, row in data.iterrows():
     #print("\nBefore preprocessing:\n\n", OnePost[0:500])
     #print("\nAfter preprocessing:\n\n", temp[0:500])
     #print("\nList of urls:")
-
+'''
 
 ############################## 1.先看資料的分布情形 ##############################
 
+data = pd.read_csv('./MBTI_project/data_personality/processed_all_posts_data.csv')
 #設圖形大小
 plt.figure(figsize=(40, 20))
 # 设置 x 軸
@@ -106,12 +109,11 @@ plt.xlabel('type',fontsize=16)
 plt.ylabel('number', fontsize=16)
 
 # 顯示圖形
-###plt.show()
+plt.show()
 
-############################## 把文本標籤數字化 ##############################
+############## 四個類別的分佈圖 ##############
 from sklearn.preprocessing import LabelEncoder
-unique_type_list = ['INFJ', 'ENTP', 'INTP', 'INTJ', 'ENTJ', 'ENFJ', 'INFP', 'ENFP',
-       'ISFP', 'ISTP', 'ISFJ', 'ISTJ', 'ESTP', 'ESFP', 'ESTJ', 'ESFJ']
+unique_type_list = ["infp","infj","intj","intp","isfp","isfj","istj","istp","enfp","enfj","entj","entp","esfp","esfj","estj","estp"]
 lab_encoder = LabelEncoder().fit(unique_type_list)
 #print(lab_encoder.transform(['INFJ']))
 
@@ -122,27 +124,27 @@ data['ft'] = data.type
 data['pj'] = data.type
 
 for i, t in enumerate(data.type):
-    if 'I' in t:
-        data.ie[i] = 'I'
-    elif 'E' in t:
-        data.ie[i] = 'E'
+    if 'i' in t:
+        data.ie[i] = 'i'
+    elif 'e' in t:
+        data.ie[i] = 'e'
         
-    if 'N' in t:
-        data.ns[i] = 'N'
-    elif 'S' in t:
-        data.ns[i] = 'S'
+    if 'n' in t:
+        data.ns[i] = 'n'
+    elif 's' in t:
+        data.ns[i] = 's'
         
-    if 'F' in t:
-        data.ft[i] = 'F'
-    elif 'T' in t:
-        data.ft[i] = 'T'
+    if 'f' in t:
+        data.ft[i] = 'f'
+    elif 't' in t:
+        data.ft[i] = 't'
         
-    if 'P' in t:
-        data.pj[i] = 'P'
-    elif 'J' in t:
-        data.pj[i] = 'J'
+    if 'p' in t:
+        data.pj[i] = 'p'
+    elif 'j' in t:
+        data.pj[i] = 'j'
 
-posts = data.posts.values
+posts = data.processed_content.values
 yIE = data.ie.values
 yNS = data.ns.values
 yFT = data.ft.values

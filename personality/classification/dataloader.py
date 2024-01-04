@@ -1,7 +1,11 @@
 import torch
 from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler, TensorDataset)
+### dataloader 數據加載器 =>基于 PyTorch 的模型准备训练和评估数据。它将数据转换为模型所需的格式 ###
+#PyTorch 中用于加载数据的一个工具，可以为模型训练提供批量数据
 
 def get_train_dataloader(args, train_features):
+    #args：包含训练配置的参数 
+    #train_features : 训练数据集的特征列表
     all_input_ids = torch.tensor([f.input_ids for f in train_features], dtype=torch.long)
     all_input_mask = torch.tensor([f.input_mask for f in train_features], dtype=torch.long)
     all_segment_ids = torch.tensor([f.segment_ids for f in train_features], dtype=torch.long)

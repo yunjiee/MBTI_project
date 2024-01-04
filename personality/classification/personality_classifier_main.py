@@ -13,17 +13,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""BERT finetuning runner.微調"""
-'''理想狀態來說: 應該只要給他下面兩個資料data_dir和output_dir，就可以先跑跑看
-parser.add_argument("--data_dir", default="./", type=str)
-parser.add_argument("--output_dir", default="./output/", type=str)
-
-=>都測試好後,再來看base-large的部分
-'''
-#用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
+###############"""BERT finetuning runner.微調"""########################
+#理想狀態來說: 應該只要給他下面兩個資料data_dir和output_dir，就可以先跑跑看
+#parser.add_argument("--data_dir", default="./", type=str)
+#parser.add_argument("--output_dir", default="./output/", type=str)
+#=>都測試好後,再來看base-large的部分
 from __future__ import absolute_import, division, print_function
+#用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
 
-import argparse
+import argparse #解析命令行参数 =>运行程序时从命令行指定这些参数
 import csv
 import os
 import random
@@ -37,7 +35,9 @@ from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm, trange
 
 from torch.nn import CrossEntropyLoss, MSELoss
+#pip install scipy
 from scipy.stats import pearsonr, spearmanr
+#pip install scikit-learn
 from sklearn.metrics import matthews_corrcoef, f1_score
 
 from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE, WEIGHTS_NAME, CONFIG_NAME
@@ -59,8 +59,10 @@ def main():
     #调用定义了一个命令行参数的规则，包括如何解析该参数以及该参数的一些元数据
     #参数名称以两个连字符（--）开头，它被视为一个可选参数(是那些在命令行中可以省略的参数。意味着在命令行中使用这些参数时，需要使用其完整的名称)
     parser.add_argument("--data_dir", default="./", type=str)#數據目錄
+    ##data_dire資料夾內要有: train.csv 用于训练，dev.csv 或 eval.csv 用于模型评估
     parser.add_argument("--bert_model", default="bert-base-uncased", type=str)#使用的bert模型
     parser.add_argument("--output_dir", default="./output/", type=str)#輸出目錄
+    #output_dir資料夾: 训练过程中生成的模型和输出数据将保存在这个目录中
 
     parser.add_argument("--cache_dir", default="", type=str)#緩存目錄
     parser.add_argument("--max_seq_length", default=128, type=int)#最大序列長度

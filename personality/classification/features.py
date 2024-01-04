@@ -1,4 +1,7 @@
 
+#用于存储处理后的文本数据 
+#InputFeatures 是對象的列表，每个对象都包含了一个训练/评估样本的轉換後的數據。
+#这些数据可以直接用于 BERT 模型的训练或评估
 class InputFeatures(object):
     def __init__(self, input_ids, input_mask, segment_ids, label_id):
         self.input_ids = input_ids
