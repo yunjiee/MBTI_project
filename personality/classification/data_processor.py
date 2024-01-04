@@ -12,31 +12,32 @@ class InputExample(object):
         self.guid = guid #self:看guid的屬性和方法#guid有點類似於地標
         self.text = text
         self.label = label
-
 # 定義DataProcessor類，作為序列分類數據集的數據轉換器的基類
+#class DataProcessor(object): 類似於大綱的設計，如果沒有執行到裡面任何一個def，就會出現NotImplementedError()的錯誤
 class DataProcessor(object):
     """Base class for data converters for sequence classification data sets."""
+    #这个方法会根据特定数据集的格式和结构来解析数据。
     # 用於獲取訓練集的InputExample的集合，需要在子類中實現
     def get_train_examples(self, data_dir):
         """Gets a collection of `InputExample`s for the train set."""
         #獲取訓練集的`InputExample`集合
         raise NotImplementedError()
-#當代碼執行到 raise 語句時，指定的例外會被觸發，並且通常會中斷當前執行的函數或方法
-#NotImplementedError通常用於表示某個方法或功能還沒有被實現
-
+    #當代碼執行到 raise 語句時，指定的例外會被觸發，並且通常會中斷當前執行的函數或方法
+    #NotImplementedError通常用於表示某個方法或功能還沒有被實現
     # 用於獲取開發（驗證）集的InputExample的集合，需要在子類中實現
+    #目的是将开发集数据转换为 InputExample 对象，以便用于模型的验证和调优。
     def get_dev_examples(self, data_dir):
         """Gets a collection of `InputExample`s for the dev set."""
         raise NotImplementedError()
+    #    # 用於獲取該數據集的標籤列表，需要在子類中實現
 
-    # 用於獲取該數據集的標籤列表，需要在子類中實現
     def get_labels(self):
         """Gets the list of labels for this data set."""
         raise NotImplementedError()
-
+    #方法对于了解数据集的结构和训练模型时定义输出层非常重要。
     @classmethod
     def _read_tsv(cls, input_file, quotechar=None):
-        """Reads a tab separated value file."""
+        """Reads a tab separated value file.制表符分隔"""
         with open(input_file, "r", encoding="utf-8") as f:
             reader = csv.reader(f, quotechar=quotechar)
             lines = []
@@ -47,6 +48,7 @@ class DataProcessor(object):
                     lines.append(line)
             return lines
 
+#子目錄=> 用於取代大綱裡面的內容，來執行個別化的程式
 class PersonalityProcessor(DataProcessor):
     #類定義或構造函數
     def __init__(self, mode):
