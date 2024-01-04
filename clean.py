@@ -13,14 +13,12 @@ def preprocess_text(text):
     text = re.sub(r"\s{2,}", " ", text) #去除多餘空
     text = re.sub(r'http\S+', ' ', text)  # 移除URLs
     text = re.sub(r'[^a-z .]', ' ', text)  # 替换非英文字符为一个空格
-    text = re.sub("[^a-zA-Z.,!?']", " ", text)  # 保留字母和标点符号，替换其他字符为一个空格
+    text = re.sub(r'[^a-z0-9 .,!?\'\"]', " ", text)  # 保留字母和标点符号，替换其他字符为一个空格
     # 构建正则表达式，使用 | 分隔不要的词语，并添加括号来捕获匹配项
     pattern = r'(' + '|'.join(map(re.escape, mbti_types)) + ')'
     # 将匹配到的词语替换为 <type>
     text = re.sub(pattern, '<type>', text)
-    # 分词并应用词干提取
-    words = word_tokenize(text)
-    return words
+    return text
 
 for mbti_type in mbti_types:
     file_name = f'./MBTI_project/data_personality/{mbti_type}_posts_data.csv'
