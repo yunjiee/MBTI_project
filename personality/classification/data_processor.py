@@ -2,8 +2,8 @@ import os
 import csv
 import sys
 import re
-#from cleaning import clean
-from clean import preprocess_text
+from cleaning import clean
+#from clean import preprocess_text
 #表示用於單個訓練或測試的例子
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
