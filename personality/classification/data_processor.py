@@ -2,8 +2,8 @@ import os
 import csv
 import sys
 import re
-from cleaning import clean
-
+#from cleaning import clean
+from clean import preprocess_text
 #表示用於單個訓練或測試的例子
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
@@ -50,17 +50,22 @@ class DataProcessor(object):
 
 #子目錄=> 用於取代大綱裡面的內容，來執行個別化的程式
 class PersonalityProcessor(DataProcessor):
+    #類定義或構造函數
     def __init__(self, mode):
-        self.mode = mode
+        self.mode = mode #该参数可能用于指定处理数据的模式（如对 MBTI 类型的不同处理方式）
         self.mode = self.mode.upper()
 
+    #獲取訓練和驗證數據的方式
+    #從从指定的目录data_dir中读取训练和开发（验证）数据集。
     def get_train_examples(self, data_dir):
+        #create_examples 方法用于将读取的数据转换为一定格式的例子
         return self.create_examples(self._read_tsv(os.path.join(data_dir, "train.csv")), "train")
-
     def get_dev_examples(self, data_dir):
         return self.create_examples(self._read_tsv(os.path.join(data_dir, "dev.csv")), "dev")
 
+    #獲取標籤的方法
     def get_labels(self, data_dir):
+        #获取训练数据集中所有不同的标签，并将它们存储在一个列表中
         labels_list = []
         train_examples = self.get_train_examples(data_dir)
         for i in train_examples: 
@@ -68,6 +73,7 @@ class PersonalityProcessor(DataProcessor):
                 labels_list.append(i.label)
         return labels_list
 
+    #創建例子的方法
     def create_examples(self, lines, set_type):
         examples = []
         for (i, line) in enumerate(lines):
@@ -75,7 +81,7 @@ class PersonalityProcessor(DataProcessor):
             id_num = "%s-%s" % (set_type, i)
             text = line[1]
             text = clean(text)
-
+            print(text)
             label = line[0]
             label = re.sub("[^a-zA-Z]", '', label)
             label = label.lower()
