@@ -1,21 +1,85 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    padding: 20px;
-  }
-  
-  #articleInput {
-    width: 70%;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  
-  #submitButton {
-    padding: 10px;
-    cursor: pointer;
-  }
-  
-  #errorMessage {
-    color: red;
-  }
-  
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+  background-image: url('plant.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  display: flex;
+  flex-direction: column; /* 讓子元素按照垂直方向排列 */
+  align-items: center;
+  justify-content: center;
+}
+
+#articleInput {
+  width: 40%; /* 設定寬度為25% */
+  padding: 10px;
+  margin-bottom: 10px;
+  aspect-ratio: 2 / 1; 
+  background-color: rgba(255, 255, 255, 0.5); /* 半透明白色背景，可以根據需要調整顏色和透明度 */
+}
+
+#submitButton {
+  padding: 10px;
+  cursor: pointer;
+}
+
+#errorMessage {
+  color: red;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+  background-image: url('plant.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  display: flex;
+  flex-direction: column; /* 讓子元素按照垂直方向排列 */
+  align-items: center;
+  justify-content: center;
+}
+
+#articleInput {
+  width: 40%;
+  padding: 10px;
+  margin-bottom: 10px;
+  aspect-ratio: 2 / 1;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+#submitButton {
+  padding: 10px;
+  cursor: pointer;
+}
+
+#errorMessage {
+  color: red;
+}
+
+#navbar {
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  display: flex;
+}
+
+#navbar a {
+  color: white;
+  text-decoration: none;
+  margin-right: 20px;
+}
+
+#content {
+  padding: 20px;
+  background-color: white;
+  border-radius: 10px;
+  margin-top: 20px;
+}
