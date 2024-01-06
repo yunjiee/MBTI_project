@@ -16,7 +16,7 @@ Q2.是否要以number => 如果以單詞數量呈現的話，就要統整出各�
 '''
 ##################################
 #收集到的全部資料
-file_path = 'C:/Users/student/yunjiee-python/MBTI_project/data_personality/processed_all_posts_data.csv'
+file_path = './MBTI_project/data_personality/processed_all_posts_data.csv'
 data = pd.read_csv(file_path)
 
 ####
