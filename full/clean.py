@@ -41,10 +41,13 @@ def preprocess_text(text):
     return text
 
 for mbti_type in mbti_types:
-    file_name = f'./MBTI_project/data_personality/{mbti_type}_posts_data.csv'
+    file_name = f'C:/Users/student/yunjiee-python/MBTI_project/data_personality/{mbti_type}_posts_data.csv'
     data = pd.read_csv(file_name)
     data = data.dropna(subset=['Content'])
     data = data[data['Content'].str.strip().astype(bool)]  # 然后删除内容仅包含空格的行
+    data['word_count'] = data['Content'].apply(lambda x: len(x.split()))
+    data = data[data['word_count'] >= 3]
+
 
     data['processed_content'] = data['Content'].astype(str).apply(preprocess_text)
     data['type'] = mbti_type
@@ -52,6 +55,6 @@ for mbti_type in mbti_types:
     data = data[['type', 'processed_content']]
     all_data = pd.concat([all_data, data], ignore_index=True)
     
-all_data.to_csv('./MBTI_project/data_personality/processed_all_posts_data.csv', index=False)
+all_data.to_csv('C:/Users/student/yunjiee-python/MBTI_project/personality/classification/data_dir/processed_all_posts_data.csv', index=False)
 
-print("All processed data saved to: ./MBTI_project/data_personality/processed_all_posts_data.csv")
+print("All processed data saved to:")

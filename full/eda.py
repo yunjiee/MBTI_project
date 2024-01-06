@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 1.全部類型一起的分布圖(content文章的數量)
 2.四個類型的各自資料量(content文章的數量)
 3.跑出全部資料的content和number
-4.
+4.##全體字數量
+5.##看有沒有kaggle有沒有甚麼圖的
 
 Q1.顏色要另外下載套組，讓他全部分色
 Q2.是否要以number => 如果以單詞數量呈現的話，就要統整出各類別最常用的單詞會更好
