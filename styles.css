@@ -3,32 +3,134 @@ body {
   text-align: center;
   padding: 20px;
   margin: 0;
-  background-image: url('plant.jpg');
+  background-image: url('flowers.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   height: 100vh;
   display: flex;
-  flex-direction: column; /* 讓子元素按照垂直方向排列 */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
+#navbar {
+  background-color: rgba(228, 159, 147, 0.8);
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  position: fixed; /* 將工具欄固定在網頁頂部 */
+  top: 0; /* 置於網頁的頂部 */
+  width: 100%; /* 佔滿整個寬度 */
+  z-index: 1000; /* 設定 z-index 以確保在其他元素之上 */
+}
+
+#logo {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+#theme a {
+  color: white;
+  text-decoration: none;
+  margin-right: 20px;
+  font-size: 18px;
+  position: relative;
+}
+
+#theme a:hover {
+  color: #8B4513; /* 咖啡色 */
+  font-weight: bold;
+}
+
+#theme a::before {
+  content: ''; 
+  position: absolute;
+  bottom: -2px; /* 初始时底线位置在文字正下方，注意这里的值 */
+  left: 0;
+  width: 0; /* 初始时宽度为0，不显示底线 */
+  height: 1px; /* 将高度设为1px，使底线更细 */
+  background-color: #8B4513; /* 咖啡色 */
+  transition: width 0.3s ease;
+}
+
+#theme a:hover::before {
+  width: 100%; /* 鼠标悬停时底线宽度为100% */
+}
+
+/* 添加媒體查詢，當螢幕寬度較小時進行縮排 */
+@media screen and (max-width: 600px) {
+  #navbar {
+    flex-direction: column; /* 在小螢幕上轉為垂直排列 */
+    align-items: center; /* 水平置中 */
+    text-align: center; /* 文字置中 */
+  }
+
+  #theme a {
+    margin-right: 0; /* 移除右邊的間距，使其縮排 */
+    margin-bottom: 10px; /* 增加底部間距，提升可讀性 */
+  }
+}
+
+#inputDescription {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+#inputDescription {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.line1 {
+  font-size: 26px; /* 第一行文字的字体大小 */
+  font-weight: bold; /* 第一行文字的加粗设置 */
+}
+
+.line2 {
+  font-size: 18px; /* 第二行文字的字体大小 */
+}
+
+#inputContainer {
+  width: 80%; /* 修改寬度，讓較小螢幕上也能正常顯示 */
+  max-width: 600px; /* 新增這一行 */
+  padding: 20px;
+  background-color: rgba(245, 235, 235, 0.8);
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
 #articleInput {
-  width: 40%; /* 設定寬度為25% */
+  width: 90%;
   padding: 10px;
   margin-bottom: 10px;
-  aspect-ratio: 2 / 1; 
-  background-color: rgba(255, 255, 255, 0.5); /* 半透明白色背景，可以根據需要調整顏色和透明度 */
+  aspect-ratio: 2 / 1;
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: background-color 0.3s ease;
+  font-size: 16px;
+}
+
+#articleInput:focus {
+  background-color: rgb(255, 255, 255);
 }
 
 #submitButton {
+  width: 18%; /* 讓完成按鈕佔滿 #inputContainer 的寬度 */
   padding: 10px;
   cursor: pointer;
+  margin-top: 10px; /* 新增這一行，設定完成按鈕和輸入欄的垂直間距 */
 }
 
 #errorMessage {
   color: red;
+  font-size: 14px;
+}
+
+#completionMessage {
+  margin-top: 10px;
+  color: green;
 }
 
 body {
@@ -36,50 +138,147 @@ body {
   text-align: center;
   padding: 20px;
   margin: 0;
-  background-image: url('plant.jpg');
+  background-image: url('flowers.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   height: 100vh;
   display: flex;
-  flex-direction: column; /* 讓子元素按照垂直方向排列 */
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
+#navbar {
+  background-color: rgba(228, 159, 147, 0.8);
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  position: fixed; /* 將工具欄固定在網頁頂部 */
+  top: 0; /* 置於網頁的頂部 */
+  width: 100%; /* 佔滿整個寬度 */
+  z-index: 1000; /* 設定 z-index 以確保在其他元素之上 */
+}
+
+#logo {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+#theme a {
+  color: white;
+  text-decoration: none;
+  margin-right: 20px;
+  font-size: 18px;
+  position: relative;
+}
+
+#theme a:hover {
+  color: #8B4513; /* 咖啡色 */
+  font-weight: bold;
+}
+
+#theme a::before {
+  content: ''; 
+  position: absolute;
+  bottom: -2px; /* 初始时底线位置在文字正下方，注意这里的值 */
+  left: 0;
+  width: 0; /* 初始时宽度为0，不显示底线 */
+  height: 1px; /* 将高度设为1px，使底线更细 */
+  background-color: #8B4513; /* 咖啡色 */
+  transition: width 0.3s ease;
+}
+
+#theme a:hover::before {
+  width: 100%; /* 鼠标悬停时底线宽度为100% */
+}
+
+/* 添加媒體查詢，當螢幕寬度較小時進行縮排 */
+@media screen and (max-width: 600px) {
+  #navbar {
+    flex-direction: column; /* 在小螢幕上轉為垂直排列 */
+    align-items: center; /* 水平置中 */
+    text-align: center; /* 文字置中 */
+  }
+
+  #theme a {
+    margin-right: 0; /* 移除右邊的間距，使其縮排 */
+    margin-bottom: 10px; /* 增加底部間距，提升可讀性 */
+  }
+}
+
+#inputDescription {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+#inputDescription {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.line1 {
+  font-size: 26px; /* 第一行文字的字体大小 */
+  font-weight: bold; /* 第一行文字的加粗设置 */
+}
+
+.line2 {
+  font-size: 18px; /* 第二行文字的字体大小 */
+}
+
+#inputContainer {
+  width: 80%; /* 修改寬度，讓較小螢幕上也能正常顯示 */
+  max-width: 600px; /* 新增這一行 */
+  padding: 20px;
+  background-color: rgba(245, 235, 235, 0.8);
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
 #articleInput {
-  width: 40%;
+  width: 90%;
   padding: 10px;
   margin-bottom: 10px;
   aspect-ratio: 2 / 1;
   background-color: rgba(255, 255, 255, 0.5);
+  transition: background-color 0.3s ease;
+  font-size: 16px;
+}
+
+#articleInput:focus {
+  background-color: rgb(255, 255, 255);
 }
 
 #submitButton {
+  width: 18%; /* 讓完成按鈕佔滿 #inputContainer 的寬度 */
   padding: 10px;
   cursor: pointer;
+  margin-top: 10px; /* 新增這一行，設定完成按鈕和輸入欄的垂直間距 */
 }
 
 #errorMessage {
   color: red;
+  font-size: 14px;
 }
 
-#navbar {
-  background-color: #333;
-  color: white;
-  padding: 10px;
-  display: flex;
+#completionMessage {
+  margin-top: 10px;
+  color: green;
 }
 
-#navbar a {
-  color: white;
-  text-decoration: none;
-  margin-right: 20px;
+/* 加入等待頁面的樣式 */
+#loadingSpinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
 }
 
-#content {
-  padding: 20px;
-  background-color: white;
-  border-radius: 10px;
-  margin-top: 20px;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
