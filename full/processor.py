@@ -118,7 +118,7 @@ class PersonalityProcessor(DataProcessor):
             examples.append(InputExample(guid=id_num, text=text, label=label))
         return examples
 
-data_dir = "C:/Users/student/yunjiee-python/MBTI_project/full/data"
+data_dir = "./MBTI_project/full/data"
 processor = PersonalityProcessor("YOUR_MODE")  # 替换为您的模式
-#train_examples = processor.get_train_examples(data_dir)
-#dev_examples = processor.get_dev_examples(data_dir)
+train_examples = processor.get_train_examples(data_dir)
+dev_examples = processor.get_dev_examples(data_dir)

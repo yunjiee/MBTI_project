@@ -6,8 +6,8 @@ import csv
 def sametest():
     lines = []
     lines2 = []
-    train_file = "C:/Users/student/yunjiee-python/MBTI_project/full/data/train.csv"
-    dev_file = "C:/Users/student/yunjiee-python/MBTI_project/full/data/dev.csv"
+    train_file = "./MBTI_project/full/data/train.csv"
+    dev_file = "./MBTI_project/full/data/dev.csv"
     #读取 train.csv 文件
     with open(train_file, "r", encoding="utf-8") as f:
         reader = csv.reader(f)
