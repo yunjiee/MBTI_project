@@ -1,6 +1,5 @@
 import os
 import csv
-import sys
 from sklearn.model_selection import train_test_split
 
 #条件包括：行必须有两个元素，第二个元素（假设为文本）的长度大于 50 字符，并且该行尚未出现在 lines 列表中。
@@ -37,8 +36,8 @@ def dataset_exporter(train, dev, directory):
         writer.writerows(dev)
 
 #lines = combine("./dataset")
-path = "C:/Users/student/yunjiee-python/MBTI_project/personality/classification/data_dir/processed_all_posts_data.csv"
-directory = "C:/Users/student/yunjiee-python/MBTI_project/personality/classification/data_dir"  # 保存文件的目录
+path = "./MBTI_project/full/data/processed_all_posts_data.csv"
+directory = "./MBTI_project/full/data"  # 保存文件的目录
 
 lines = combine(path)
 train, dev = create_combined_dataset(lines)
