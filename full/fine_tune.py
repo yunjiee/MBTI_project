@@ -58,7 +58,7 @@ def main():
     ###################### 参数解析 (argparse)，可以靈活的取用外部參數 ######################
     parser = argparse.ArgumentParser()
     #添加各種命令行參數
-    #调用定义了一个命令行参数的规则，包括如何解析该参数以及该参数的一些元数据
+    #调用定义了一个命令行参数的规则，包括如何解析该参数以及该参数的一些元数据 
     #参数名称以两个连字符（--）开头，它被视为一个可选参数(是那些在命令行中可以省略的参数。意味着在命令行中使用这些参数时，需要使用其完整的名称)
     #--沒修改，默认为 "./"（当前目录）
     parser.add_argument("--data_dir", default="./MBTI_project/full/data/", type=str)#數據目錄
@@ -156,6 +156,11 @@ def main():
     model.to(device)
     
     ###pip install apex ###
+    '''下載apex
+    !git clone https://github.com/NVIDIA/apex
+    %cd apex
+    !python setup.py install
+    '''
     if args.local_rank != -1:
         try:
             from apex.parallel import DistributedDataParallel as DDP
@@ -171,14 +176,17 @@ def main():
 
     global_step = 0
     
-    ###模型訓練
+    ### 模型訓練 ### 
     if args.do_train:
+        ##### 準備使用的訓練數據 ####
+        #convert_examples_to_features：将文本数据转换为模型可接受的格式
         train_features = convert_examples_to_features(train_examples, label_list, args.max_seq_length, tokenizer)
         train_dataloader = get_train_dataloader(args, train_features)
-
+        #保存模型，将训练后的模型及其配置保存到文件中
         model.train()
         for _ in trange(int(args.num_train_epochs), desc="Epoch"):
             tr_loss = 0
+            ### 準備評估數據 ###
             nb_tr_examples, nb_tr_steps = 0, 0
             for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
                 batch = tuple(t.to(device) for t in batch)

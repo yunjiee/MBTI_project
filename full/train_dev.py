@@ -1,5 +1,6 @@
 import os
 import csv
+import pandas as pd
 from sklearn.model_selection import train_test_split
 
 #条件包括：行必须有两个元素，第二个元素（假设为文本）的长度大于 50 字符，并且该行尚未出现在 lines 列表中。
@@ -19,8 +20,9 @@ def combine(directory):
 
 #将lines列表分割成训练集(train)和开发集(dev)，開發集大小为 15%
 def create_combined_dataset(lines):
-	train, dev = train_test_split(lines, test_size = 0.15)
-	return train, dev
+    train, dev = train_test_split(lines, test_size=0.15)
+    return train, dev
+
 
 #把得到的 train和dev 列表的内容，分別寫入 train和dev .csv文件。
 def dataset_exporter(train, dev, directory):
@@ -36,7 +38,7 @@ def dataset_exporter(train, dev, directory):
         writer.writerows(dev)
 
 #lines = combine("./dataset")
-path = "./MBTI_project/full/data/processed_all_posts_data.csv"
+path = "./MBTI_project/full/data/subprocessed_all_posts_data.csv"
 directory = "./MBTI_project/full/data"  # 保存文件的目录
 
 lines = combine(path)
