@@ -10,7 +10,7 @@ from selenium.common.exceptions import TimeoutException
 authors_set = set()
 all_posts_data = []
 
-def crawl_enfp_forum(base_url, author_limit, output_path="enfp_posts_data.csv"):
+def crawl_estj_forum(base_url, author_limit, output_path="estj_posts_data.csv"):
     driver = webdriver.Chrome()
     driver.implicitly_wait(60)
 
@@ -108,16 +108,16 @@ def crawl_enfp_forum(base_url, author_limit, output_path="enfp_posts_data.csv"):
     return all_posts_data
 
 # 設定論壇基本網址
-base_forum_url = "https://www.personalitycafe.com/forums/enfp-forum-the-inspirers.19"
+base_forum_url = "https://www.personalitycafe.com/forums/estj-forum-the-guardians.6/"
 
 # 設定要爬取的作者數目
 author_limit = 500
 
 # 設定輸出檔案的路徑
-output_csv_path = "data_personality/enfp_data.csv"
+output_csv_path = "data_personality/estj_data.csv"
 
 # 爬取資料
-all_posts_data = crawl_enfp_forum(base_forum_url, author_limit, output_path=output_csv_path)
+all_posts_data = crawl_estj_forum(base_forum_url, author_limit, output_path=output_csv_path)
 
 # 將所有的資料轉換成 DataFrame
 df_all_posts = pd.DataFrame(all_posts_data)
