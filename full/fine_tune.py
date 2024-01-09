@@ -54,10 +54,10 @@ from bert_model import get_bert_model, get_optimizer
 
 
 def main():
-    #創建一個解析器，用於處理命令行參數
+    #### 創建一個解析器，用於處理命令行參數 ####
     ###################### 参数解析 (argparse)，可以靈活的取用外部參數 ######################
     parser = argparse.ArgumentParser()
-    #添加各種命令行參數
+    #### 添加各種命令行參數 ####
     #调用定义了一个命令行参数的规则，包括如何解析该参数以及该参数的一些元数据 
     #参数名称以两个连字符（--）开头，它被视为一个可选参数(是那些在命令行中可以省略的参数。意味着在命令行中使用这些参数时，需要使用其完整的名称)
     #--沒修改，默认为 "./"（当前目录）
@@ -92,9 +92,12 @@ def main():
     #如果命令行参数不符合预定义的规则，parse_args()会自动显示错误信息并退出程序
     #这在创建需要用户输入参数的脚本时非常有用。
     
-    ##解析从命令行传递给 Python 脚本的参数
+    #### 解析从命令行传递给 Python 脚本的参数 ####
+    #用于使 Python 程序能够更容易地从命令行接受参数。这对于创建可配置的脚本或应用程序非常有用，因为你可以在不修改代码的情况下改变程序的行为。
     args = parser.parse_args()
-
+    #使用参数
+    #print(args.input)
+    
     ##################### 設定設備(cpu或gpu) #####################
     if args.local_rank == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
@@ -181,6 +184,7 @@ def main():
         ##### 準備使用的訓練數據 ####
         #convert_examples_to_features：将文本数据转换为模型可接受的格式
         train_features = convert_examples_to_features(train_examples, label_list, args.max_seq_length, tokenizer)
+        #train_examples來自Processor
         train_dataloader = get_train_dataloader(args, train_features)
 
         #深度学习模型的训练循环
@@ -224,29 +228,37 @@ def main():
                 print("訓練完成")
 
     ####### 如果成功執行，它会将训练过程中得到的模型和相关配置保存到指定的目录中，並可以重新使用這數據 ####### 
+    #如果不是在分布式训练环境中（local_rank == -1），或者如果是在分布式训练环境中的主进程（torch.distributed.get_rank() == 0），那么执行后续的代码块（比如保存模型）
     if args.do_train and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
         #条件检查是否完成了训练，并且在分布式训练环境中只在主节点（rank 0）上执行保存操作
         # Save a trained model, configuration and tokenizer
+        #提取实际的模型以供保存
         model_to_save = model.module if hasattr(model, 'module') else model  # Only save the model it-self
         print("######################################")
         # If we save using the predefined names, we can load using `from_pretrained`
         output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
         output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
         ####
-
+        #保存模型的状态字典（state_dict），这包含了模型的所有权重和偏差参数。
         torch.save(model_to_save.state_dict(), output_model_file)
-        model_to_save.config.to_json_file(output_config_file)
-        tokenizer.save_vocabulary(args.output_dir)
-
+        model_to_save.config.to_json_file(output_config_file) #将模型的配置保存为 JSON 文件
+        tokenizer.save_vocabulary(args.output_dir) #用于模型的分词器保存到指定目录。
+        
+        #从保存的文件中加载训练后的模型和分词器。
         # Load a trained model and vocabulary that you have fine-tuned
         model = BertForSequenceClassification.from_pretrained(args.output_dir, num_labels=num_labels)
         tokenizer = BertTokenizer.from_pretrained(args.output_dir, do_lower_case=args.do_lower_case)
     else:
+        #如果没有进行训练，则直接从预训练的 BERT 模型加载。
+        print("沒有進行訓練到")
         model = BertForSequenceClassification.from_pretrained(args.bert_model, num_labels=num_labels)
+    #将模型移动到指定的设备（比如 GPU），來進行訓練評估
     model.to(device)
 
     #評估
     if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
+        #準備評估數據
+        #指定的数据目录加载开发集（或验证集）
         eval_examples = processor.get_dev_examples(args.data_dir)
         eval_features = convert_examples_to_features(eval_examples, label_list, args.max_seq_length, tokenizer)
         eval_dataloader = get_eval_dataloader(args, eval_features)

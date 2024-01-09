@@ -60,7 +60,7 @@ class DataProcessor(object):
 这种格式适合用于后续的机器学习模型训练和验证。
 通过这种方式，您可以确保数据以一种标准和一致的方式被处理和呈现给模型。
 '''
-#如何读取、解析和转换特定于个性类型数据集的数据。
+### 處立準備數據 => 如何读取、解析和转换特定于个性类型数据集的数据。 ###
 class PersonalityProcessor(DataProcessor):
     #類定義或構造函數
     def __init__(self, mode):
@@ -105,6 +105,7 @@ class PersonalityProcessor(DataProcessor):
             #id_num 每个数据样本生成的唯一标识符
             text = line[1]
             text = preprocess_text(text)
+            #針對標籤進行確認
             label = line[0]
             label = re.sub("[^a-zA-Z]", '', label)
             label = label.lower()
