@@ -9,13 +9,14 @@ class InputFeatures(object):
         self.input_mask = input_mask
         self.segment_ids = segment_ids
         self.label_id = label_id
+        print('111 InputFeatures 111')
         
 
 def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer):
     """Loads a data file into a list of `InputBatch`s."""
 
     label_map = {label : i for i, label in enumerate(label_list)}
-    print(label_map)
+    print("111 label_map 111",label_map)
     features = []
     for (ex_index, example) in enumerate(examples):
 
@@ -64,7 +65,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         assert len(input_ids) == max_seq_length
         assert len(input_mask) == max_seq_length
         assert len(segment_ids) == max_seq_length
-        
+        print('111 convert_examples_to_features 111')
         #label_id：序列的标签 ID，用于训练或评估
         label_id = label_map[example.label]
 

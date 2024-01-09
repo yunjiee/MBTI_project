@@ -22,10 +22,10 @@ def preprocess_text(text):
     pattern = r'(' + '|'.join(map(re.escape, mbti_types)) + ')'
     text = re.sub(r"\s{2,}", " ", text) #去除多餘空
     text = re.sub(r'\s+', ' ', text) # 合并多个空格为一个空格
-    print("333333333333333333333333",text)
-
+    #print("111111clean11111",text)
+    text = re.sub(r'[^a-zA-Z\s\.\,\!\?\(\)\']', '', text)
     # 将匹配到的词语替换为 <type>
-    text = re.sub(pattern, '<type>', text)
+    text = re.sub(pattern, 'type', text)
     text = re.sub(r"\'s", " \'s", text) 
     text = re.sub(r"\'ve", " \'ve", text) 
     text = re.sub(r"n\'t", " n\'t", text) 
@@ -39,7 +39,7 @@ def preprocess_text(text):
     text = re.sub(r"\(", " ( ", text) 
     text = re.sub(r"\)", " ) ", text) 
     text = re.sub(r"\? ", " ? ", text)
-    print("2222222222222222222",text)
+    #print("22clean2222",text)
     return text
 
 for mbti_type in mbti_types:
