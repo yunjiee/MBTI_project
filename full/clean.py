@@ -18,8 +18,14 @@ def preprocess_text(text):
     text = str(text).lower()  # 确保文本是字符串类型并转换为小写
     text = re.sub(r'http\S+', ' ', text)  # 移除URLs
     text = re.sub(r"\\t", "  ", text)
-    #text = re.sub(r'[^a-z0-9 .,!?\'\"]', " ", text)  # 保留字母和标点符号，替换其他字符为一个空格
-    print("1111111111111111111",text)
+    # 构建正则表达式，使用 | 分隔不要的词语，并添加括号来捕获匹配项
+    pattern = r'(' + '|'.join(map(re.escape, mbti_types)) + ')'
+    text = re.sub(r"\s{2,}", " ", text) #去除多餘空
+    text = re.sub(r'\s+', ' ', text) # 合并多个空格为一个空格
+    print("333333333333333333333333",text)
+
+    # 将匹配到的词语替换为 <type>
+    text = re.sub(pattern, '<type>', text)
     text = re.sub(r"\'s", " \'s", text) 
     text = re.sub(r"\'ve", " \'ve", text) 
     text = re.sub(r"n\'t", " n\'t", text) 
@@ -27,20 +33,13 @@ def preprocess_text(text):
     text = re.sub(r"\'d", " \'d", text) 
     text = re.sub(r"\'ll", " \'ll", text) 
     text = re.sub(r", ", " , ", text)
-    text = re.sub(r". ", " . ", text) 
+    text = re.sub(r"\. ", " . ", text) 
     text = re.sub(r"'", " ' ", text)  
     text = re.sub(r"!", " ! ", text) 
-    text = re.sub(r" \(", " \( ", text) 
-    text = re.sub(r"\) ", " \) ", text) 
-    text = re.sub(r"\? ", " \? ", text)
+    text = re.sub(r"\(", " ( ", text) 
+    text = re.sub(r"\)", " ) ", text) 
+    text = re.sub(r"\? ", " ? ", text)
     print("2222222222222222222",text)
-    text = re.sub(r"\s{2,}", " ", text) #去除多餘空
-    text = re.sub(r'\s+', ' ', text) # 合并多个空格为一个空格
-    print("333333333333333333333333",text)
-    # 构建正则表达式，使用 | 分隔不要的词语，并添加括号来捕获匹配项
-    pattern = r'(' + '|'.join(map(re.escape, mbti_types)) + ')'
-    # 将匹配到的词语替换为 <type>
-    text = re.sub(pattern, '<type>', text)
     return text
 
 for mbti_type in mbti_types:
