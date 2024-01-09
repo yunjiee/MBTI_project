@@ -3,16 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>文章輸入</title>
+  <title>MBTI 主頁</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="script.js"></script>
 </head>
 <body>
 
-<textarea id="articleInput" placeholder="請輸入文章..."></textarea>
-<button id="submitButton" onclick="checkAndSubmit()">完成</button>
-<div id="errorMessage"></div>
+<div id="navbar">
+  <div id="logo">--MBTI--</div>
+  <div id="theme">
+    <a href="detail.html">類型介紹</a>
+    <a href="data_support.html">數據支持</a>
+    <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
+    <!-- Add more themes as needed -->
+  </div>
+</div>
 
-<script src="script.js"></script>
+<div id="inputContainer">
+  <p id="inputDescription">
+    <span class="line1">測測你的人格類型</span><br>
+    <span class="line2">快留下你此刻的心情或近期的貼文內容吧</span>
+  </p>
+  <textarea id="articleInput" placeholder="請輸入文章..."></textarea>
+  <button id="submitButton" onclick="checkAndSubmit()">點我看結果</button>
+  <div id="errorMessage"></div>
+</div>
+<div id="completionMessage"></div>
 
 </body>
 </html>
