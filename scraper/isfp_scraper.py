@@ -108,7 +108,7 @@ def crawl_isfp_forum(base_url, author_limit, output_path="isfp_posts_data.csv"):
     return all_posts_data
 
 # 設定論壇基本網址
-base_forum_url = "https://www.personalitycafe.com/forums/isfp-forum-the-inspirers.19"
+base_forum_url = "https://www.personalitycafe.com/forums/isfp-forum-the-artists.12/"
 
 # 設定要爬取的作者數目
 author_limit = 500

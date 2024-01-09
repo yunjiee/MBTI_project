@@ -108,7 +108,7 @@ def crawl_infj_forum(base_url, author_limit, output_path="infj_posts_data.csv"):
     return all_posts_data
 
 # 設定論壇基本網址
-base_forum_url = "https://www.personalitycafe.com/forums/infj-forum-the-protectors.17/"
+base_forum_url = "https://www.personalitycafe.com/forums/infj-forum-the-protectors.18/"
 
 # 設定要爬取的作者數目
 author_limit = 500
