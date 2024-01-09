@@ -108,7 +108,7 @@ def crawl_intp_forum(base_url, author_limit, output_path="intp_posts_data.csv"):
     return all_posts_data
 
 # 設定論壇基本網址
-base_forum_url = "https://www.personalitycafe.com/forums/intp-forum-the-visionaries.15/"
+base_forum_url = "https://www.personalitycafe.com/forums/intp-forum-the-thinkers.16/"
 
 # 設定要爬取的作者數目
 author_limit = 500
