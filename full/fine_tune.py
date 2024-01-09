@@ -72,8 +72,8 @@ def main():
 
     parser.add_argument("--do_train", action='store_true', default=True)#是否經過訓練
     #, default=True 帶鰾不管有沒有do_train，都默認有，並執行程式
-    parser.add_argument("--do_eval", action='store_true')#是否進行評估
-    parser.add_argument("--do_lower_case", action='store_true', default=True)#是否將文本轉為小寫
+    parser.add_argument("--do_eval", action='store_true', default=True)#是否進行評估
+    parser.add_argument("--do_lower_case", action='store_true')#是否將文本轉為小寫
 
     parser.add_argument("--train_batch_size", default=32, type=int)
     parser.add_argument("--eval_batch_size", default=8, type=int)#評估時的批次大小
@@ -182,39 +182,50 @@ def main():
         #convert_examples_to_features：将文本数据转换为模型可接受的格式
         train_features = convert_examples_to_features(train_examples, label_list, args.max_seq_length, tokenizer)
         train_dataloader = get_train_dataloader(args, train_features)
+
+        #深度学习模型的训练循环
         #保存模型，将训练后的模型及其配置保存到文件中
         model.train()
         for _ in trange(int(args.num_train_epochs), desc="Epoch"):
-            tr_loss = 0
+            print("开始训练...")
+            tr_loss = 0 #訓練週期的損失
             ### 準備評估數據 ###
-            nb_tr_examples, nb_tr_steps = 0, 0
+            nb_tr_examples, nb_tr_steps = 0, 0 
+            #分別記錄處理的樣本數和步驟數
             for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
                 batch = tuple(t.to(device) for t in batch)
                 input_ids, input_mask, segment_ids, label_ids = batch
 
                 # define a new function to compute loss values for both output_modes
+                #通过模型传递输入数据，获取 logits（模型的原始输出）。
                 logits = model(input_ids, segment_ids, input_mask, labels=None)
-
+                
+                #计算预测和真实标签之间的损失
                 loss_fct = CrossEntropyLoss()
                 loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
                 
                 if n_gpu > 1:
                     loss = loss.mean() # mean() to average on multi-gpu.
                 if args.gradient_accumulation_steps > 1:
+                    #有限的 GPU 内存下有助于使用更大的批次大小。
                     loss = loss / args.gradient_accumulation_steps
 
-                loss.backward()
+                loss.backward() #反向传播以计算梯度
 
+                #tr_loss 随着每个训练周期逐渐减少，表明模型正在学习并提高其预测的准确性。
                 tr_loss += loss.item()
+                print(tr_loss)
                 nb_tr_examples += input_ids.size(0)
                 nb_tr_steps += 1
                 if (step + 1) % args.gradient_accumulation_steps == 0:
-                    optimizer.step()
-                    optimizer.zero_grad()
+                    optimizer.step() #更新模型參數
+                    optimizer.zero_grad() #清除梯度信息，为下一个批次做准备
                     global_step += 1
+                print("訓練完成")
 
-    ####### 如果成功執行，它会将训练过程中得到的模型和相关配置保存到指定的目录中 ####### 
+    ####### 如果成功執行，它会将训练过程中得到的模型和相关配置保存到指定的目录中，並可以重新使用這數據 ####### 
     if args.do_train and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
+        #条件检查是否完成了训练，并且在分布式训练环境中只在主节点（rank 0）上执行保存操作
         # Save a trained model, configuration and tokenizer
         model_to_save = model.module if hasattr(model, 'module') else model  # Only save the model it-self
         print("######################################")
