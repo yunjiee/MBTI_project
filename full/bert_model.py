@@ -16,6 +16,7 @@ def get_bert_model(args, num_labels):
 def get_optimizer(args, model, num_train_optimization_steps):
     #選取模型的參數
     #args 參數 =>用來配置模型和指定類別的數量(num_train_optimization_steps)
+    # 如果 t_total 未提供，则设置默认值
     param_optimizer = list(model.named_parameters())
     #不需要權重衰減的參數
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
@@ -32,3 +33,5 @@ def get_optimizer(args, model, num_train_optimization_steps):
                          warmup=args.warmup_proportion,
                          t_total=num_train_optimization_steps)
     return optimizer
+# 调用 get_optimizer 时传递 t_total 参数，或者设置一个合适的值
+#optimizer = get_optimizer(args, model, num_train_optimization_steps, t_total)
