@@ -33,13 +33,20 @@ def preprocess_text(text):
     text = re.sub(r"\'d", " \'d", text) 
     text = re.sub(r"\'ll", " \'ll", text) 
     text = re.sub(r", ", " , ", text)
+    #print("11111111111111111111111",text)
     text = re.sub(r"\. ", " . ", text) 
+    #print("22222222222222222222222",text)
     text = re.sub(r"'", " ' ", text)  
     text = re.sub(r"!", " ! ", text) 
     text = re.sub(r"\(", " ( ", text) 
     text = re.sub(r"\)", " ) ", text) 
     text = re.sub(r"\? ", " ? ", text)
-    #print("22clean2222",text)
+    #print("22222222222222222222222",text)
+    text = re.sub(r"\.{2,}", ".", text)
+    text = re.sub(r"\?{2,}", " ? ", text)
+    text = re.sub(r"\s{2,}", "", text) #去除多餘空
+    text = re.sub(r"\!{2,}", " ! ", text) #去除多餘空
+    #print("33333333333333333333333",text)
     return text
 
 for mbti_type in mbti_types:
@@ -57,6 +64,6 @@ for mbti_type in mbti_types:
     data = data[['type', 'processed_content']]
     all_data = pd.concat([all_data, data], ignore_index=True)
     
-all_data.to_csv('./MBTI_project/full/data/processed_all_posts_data.csv', index=False)
+all_data.to_csv('./MBTI_project/full/data/1processed_all_posts_data.csv', index=False)
 
 print("All processed data saved to:")
