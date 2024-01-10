@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -14,9 +14,52 @@
   <div id="theme">
     <a href="detail.html">類型介紹</a>
     <a href="data_support.html">數據支持</a>
+    <a href="#" onclick="navigateToTheme('theme3')">主題3</a> -->
+    <!-- Add more themes as needed -->
+  <!-- </div>
+</div>
+
+<div id="inputContainer">
+  <p id="inputDescription">
+    <span class="line1">測測你的人格類型</span><br>
+    <span class="line2">快留下你此刻的心情或近期的貼文內容吧</span>
+  </p>
+  <textarea id="articleInput" placeholder="請輸入文章..."></textarea>
+  <button id="submitButton" onclick="checkAndSubmit()">點我看結果</button>
+  <div id="errorMessage"></div>
+</div>
+<div id="completionMessage"></div>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- 其他 head 內容保持不變 -->
+
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js"></script>
+</head>
+<body>
+
+<div id="navbar">
+  <div id="menuToggle" onclick="toggleSidebar()">&#9776;</div>
+  <div id="logo">--MBTI--</div>
+  <div id="theme">
+    <a href="detail.html">類型介紹</a>
+    <a href="data_support.html">數據支持</a>
     <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
     <!-- Add more themes as needed -->
   </div>
+</div>
+
+<!-- 新增 sidebar -->
+<div id="sidebar">
+  <a href="detail.html">類型介紹</a>
+  <a href="data_support.html">數據支持</a>
+  <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
+  <!-- Add more themes as needed -->
 </div>
 
 <div id="inputContainer">
