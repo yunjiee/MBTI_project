@@ -30,3 +30,10 @@ function checkAndSubmit() {
         errorMessage.textContent = "文章內容需輸入50字(含)以上";
     }
 }
+
+
+function toggleSidebar() {
+    var sidebar = document.getElementById("sidebar");
+    sidebar.style.width = sidebar.style.width === "250px" ? "0" : "250px";
+  }
+  

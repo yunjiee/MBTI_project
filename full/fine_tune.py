@@ -70,7 +70,7 @@ def main():
     parser.add_argument("--cache_dir", default="", type=str)#緩存目錄
     parser.add_argument("--max_seq_length", default=128, type=int)#最大序列長度
 
-    parser.add_argument("--do_train", action='store_true', default=True)#是否經過訓練
+    parser.add_argument("--do_train", action='store_true')#是否經過訓練
     #, default=True 帶鰾不管有沒有do_train，都默認有，並執行程式
     parser.add_argument("--do_eval", action='store_true', default=True)#是否進行評估
     parser.add_argument("--do_lower_case", action='store_true')#是否將文本轉為小寫
@@ -131,14 +131,14 @@ def main():
     #### 检查输出目录 #####
     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train:
         raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
-    #如果們有輸出目錄，就新建立一個
+    #如果沒有輸出目錄，就新建立一個
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
     
     #代码使用 PersonalityProcessor 来处理数据，获取训练样本和标签列表。这些标签用于模型训练过程中的分类任务。
     processor = PersonalityProcessor(args.mode)
     label_list = processor.get_labels(args.data_dir)
-    print(label_list)
+    print("label_list",label_list)
     num_labels = len(label_list)
 
     #创建一个BERT分词器（Tokenizer），它用于将文本数据转换成BERT模型能够理解的格式。
@@ -163,7 +163,7 @@ def main():
     !git clone https://github.com/NVIDIA/apex
     %cd apex
     !python setup.py install
-    '''
+    
     if args.local_rank != -1:
         try:
             from apex.parallel import DistributedDataParallel as DDP
@@ -173,6 +173,7 @@ def main():
         model = DDP(model)
     elif n_gpu > 1:
         model = torch.nn.DataParallel(model)
+    '''
 
     #### Prepare optimizer
     optimizer = get_optimizer(args, model, num_train_optimization_steps)
