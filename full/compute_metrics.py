@@ -1,6 +1,6 @@
 ###用於计算和评估预测结果的准确性###
 
-##計算簡單準確率##
+##計算簡單準確率 =>比较预测值（preds）和真实标签（labels），并计算匹配的比例##
 #preds預測值 #labels真實標籤
 def simple_accuracy(preds, labels):
 	cnt = 0
@@ -12,7 +12,7 @@ def simple_accuracy(preds, labels):
 	return cnt / len(preds)
 #return 用於將計算出來準確率的值，返回给調用這個函數的代碼
 
-#更复杂的准确率，特别适用于MBTI这样的多维标签
+#更复杂的准确率，特别适用于MBTI这样的多维标签=>分成四個維度
 def full_accuracy(preds, labels):
 	# [0 matches, exactly 1 match, exactly 2 matches, exactly 3 matches, exactly 4 matches]
 	#记录了不同匹配程度的计数
@@ -37,9 +37,10 @@ def full_accuracy(preds, labels):
 		#len(preds)總預測數
 	return num_same_array
 
-#單獨計算MBTI每個維度(E/I、N/S、F/T、P/J)的準確率
+#單獨計算 MBTI每個維度(E/I、N/S、F/T、P/J)的準確率
 def mbti_accuracy(preds, labels):
-	mbti_accuracy_array = [0, 0, 0, 0]
+	#preds 包含模型預測的列表 =>分別對應E/I、N/S、F/T、P/J四個維度的預測。
+	mbti_accuracy_array = [0, 0, 0, 0] #存儲每個維度的準確率。
 	for i in range(len(preds)):
 		#對於每個預測，如果在維度上匹配，則計數器加1
 		if (preds[i][0] == labels[i][0]): mbti_accuracy_array[0] += 1
@@ -47,11 +48,11 @@ def mbti_accuracy(preds, labels):
 		if (preds[i][2] == labels[i][2]): mbti_accuracy_array[2] += 1
 		if (preds[i][3] == labels[i][3]): mbti_accuracy_array[3] += 1
 	for i in range(len(mbti_accuracy_array)):
-		mbti_accuracy_array[i] /= len(preds)
+		mbti_accuracy_array[i] /= len(preds) #計數器的值除以preds列表的長度
 		#計算每個維度的準確率
 	return mbti_accuracy_array
 
-#把預測和標籤從數字形式轉為相對應的MBTI類型
+#把預測和標籤從數字形式 => 轉為相對應的MBTI類型
 def convert_to_types(preds, labels, label_list):
 	label_map = {}#把數字映射到MBTI類型
 	for i in range(len(label_list)):
@@ -68,7 +69,7 @@ def convert_to_types(preds, labels, label_list):
 	#轉換預測和標籤列表
 	return new_preds, new_labels
 
-#計算和評估MBTI類型數據的模型的性能指標
+#(综合函数) 計算和評估MBTI類型數據的模型的性能指標
 def compute_metrics(preds, labels, label_list):
 	#首先把預測和標籤轉為MBTI的類型
 	preds, labels = convert_to_types(preds, labels, label_list)
