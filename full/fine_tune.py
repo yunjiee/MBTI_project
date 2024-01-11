@@ -38,16 +38,17 @@ from torch.nn import CrossEntropyLoss, MSELoss
 from scipy.stats import pearsonr, spearmanr
 #pip install scikit-learn
 from sklearn.metrics import matthews_corrcoef, f1_score
-
+#pip install transformers
+from transformers import BertForSequenceClassification, BertTokenizer
+from torch.optim import AdamW
 from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE, WEIGHTS_NAME, CONFIG_NAME
-from pytorch_pretrained_bert.modeling import BertForSequenceClassification, BertConfig
-from pytorch_pretrained_bert.tokenization import BertTokenizer
-from pytorch_pretrained_bert.optimization import BertAdam, WarmupLinearSchedule
+#from pytorch_pretrained_bert.modeling import BertForSequenceClassification, BertConfig
+#from pytorch_pretrained_bert.tokenization import BertTokenizer
+#from pytorch_pretrained_bert.optimization import BertAdam, WarmupLinearSchedule
 
 from compute_metrics import compute_metrics
 #from data_processor import InputExample, DataProcessor, PersonalityProcessor
 from processor import InputExample, DataProcessor, PersonalityProcessor
-#from processor import InputExample, DataProcessor, PersonalityProcessor
 from features import convert_examples_to_features
 from dataloader import get_train_dataloader, get_eval_dataloader, get_label_ids
 from bert_model import get_bert_model, get_optimizer
@@ -66,7 +67,7 @@ def main():
  
     ##data_dire資料夾內要有: train.csv 用于训练，dev.csv 或 eval.csv 用于模型评估
     parser.add_argument("--bert_model", default="bert-base-uncased", type=str)#使用的bert模型
-    parser.add_argument("--output_dir", default="./MBTI_project/full/output/", type=str)#輸出目錄
+    parser.add_argument("--output_dir", default="./MBTI_project/full/output1/", type=str)#輸出目錄
     #output_dir資料夾: 训练过程中生成的模型和输出数据将保存在这个目录中
 
     parser.add_argument("--cache_dir", default="", type=str)#緩存目錄
@@ -93,6 +94,8 @@ def main():
     #用于解析命令行参数(将每个参数与之前通过 add_argument 定义的参数进行匹配，并基于提供的信息对这些参数进行适当的类型转换)
     #如果命令行参数不符合预定义的规则，parse_args()会自动显示错误信息并退出程序
     #这在创建需要用户输入参数的脚本时非常有用。
+    parser.add_argument("--adam_epsilon", default=1e-8, type=float)
+
     
     #### 解析从命令行传递给 Python 脚本的参数 ####
     #用于使 Python 程序能够更容易地从命令行接受参数。这对于创建可配置的脚本或应用程序非常有用，因为你可以在不修改代码的情况下改变程序的行为。
@@ -129,9 +132,11 @@ def main():
     if not args.do_train and not args.do_eval:
         raise ValueError("At least one of `do_train` or `do_eval` must be True.")
     
+    import shutil
     #### 检查输出目录 #####
     if os.path.exists(args.output_dir) and os.listdir(args.output_dir) and args.do_train:
-        raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
+        shutil.rmtree(args.output_dir)
+        #raise ValueError("Output directory ({}) already exists and is not empty.".format(args.output_dir))
     #如果沒有輸出目錄，就新建立一個
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
@@ -139,13 +144,16 @@ def main():
     #代码使用 PersonalityProcessor 来处理数据，获取训练样本和标签列表。这些标签用于模型训练过程中的分类任务。
     processor = PersonalityProcessor(args.mode)
     label_list = processor.get_labels(args.data_dir)
-    print("label_list",label_list)
+    print("label_list                   ",label_list)
     num_labels = len(label_list)
 
     #创建一个BERT分词器（Tokenizer），它用于将文本数据转换成BERT模型能够理解的格式。
-    tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
+    #tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
+    tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=True)#因為“uncased”模型在使用時要全部是小寫
+
     #args.bert_model 是一个命令行参数，它表示BERT模型的名称或路径
     train_examples = processor.get_train_examples(args.data_dir)
+    print("train_examples                                   ",train_examples)
     
     #验证训练样本数量
     num_train_optimization_steps = None
@@ -190,8 +198,10 @@ def main():
         ##### 準備使用的訓練數據 ####
         #convert_examples_to_features：将文本数据转换为模型可接受的格式
         train_features = convert_examples_to_features(train_examples, label_list, args.max_seq_length, tokenizer)
+        print("train_features                                 ",train_features)
         #train_examples來自Processor
         train_dataloader = get_train_dataloader(args, train_features)
+        print('train_dataloader                                       ',train_dataloader)
 
         #深度学习模型的训练循环
         #保存模型，将训练后的模型及其配置保存到文件中
@@ -208,8 +218,9 @@ def main():
 
                 # define a new function to compute loss values for both output_modes
                 #通过模型传递输入数据，获取 logits（模型的原始输出）。
-                logits = model(input_ids, segment_ids, input_mask, labels=None)
-                
+                #logits = model(input_ids, segment_ids, input_mask, labels=None)
+                output = model(input_ids, segment_ids, input_mask, labels=None)
+                logits = output.logits
                 #计算预测和真实标签之间的损失
                 loss_fct = CrossEntropyLoss()
                 loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
@@ -232,7 +243,7 @@ def main():
                     optimizer.zero_grad() #清除梯度信息，为下一个批次做准备
                     global_step += 1
                 print("訓練完成")
-
+    
     ####### 如果成功執行，它会将训练过程中得到的模型和相关配置保存到指定的目录中，並可以重新使用這數據 ####### 
     #如果不是在分布式训练环境中（local_rank == -1），或者如果是在分布式训练环境中的主进程（torch.distributed.get_rank() == 0），那么执行后续的代码块（比如保存模型）
     if args.do_train and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
@@ -284,8 +295,9 @@ def main():
             label_ids = label_ids.to(device)
 
             with torch.no_grad():
-                logits = model(input_ids, segment_ids, input_mask, labels=None)
-
+                outputs = model(input_ids, segment_ids, input_mask, labels=None)
+                # 提取logits
+                logits = outputs.logits
             # create eval loss and other metric required by the task
             loss_fct = CrossEntropyLoss()
             tmp_eval_loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
@@ -310,13 +322,12 @@ def main():
         result['global_step'] = global_step
         result['loss'] = loss
 
-        #print(result)
-
         ##輸出結果        
         output_eval_file = os.path.join(args.output_dir, "eval_results.txt")
         with open(output_eval_file, "w") as writer:
             for key in result.keys():
                 writer.write("%s = %s\n" % (key, str(result[key])))
+        
 
 
 if __name__ == "__main__":
