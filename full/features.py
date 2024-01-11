@@ -21,7 +21,9 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
     label_map = {label : i for i, label in enumerate(label_list)}
     features = []
     for (ex_index, example) in enumerate(examples):
-
+        
+        #####我在想是不是需要把每句每具的斷開########
+        #####他的斷詞tokenizer套件是補需要修改#######
         tokens = tokenizer.tokenize(example.text)
         print('example.text          ',example.text)
         print('最原始的tokens             ',tokens)
@@ -49,6 +51,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         # the entire model is fine-tuned.
         #当处理两个序列（例如，两个句子）时，它们被连接在一起
         #[SEP] 用于明确地分隔两个序列或表示单个序列的结束。
+        
         tokens = ["[CLS]"] + tokens + ["[SEP]"]
         print('加上後的tokens             ',tokens)
 
@@ -84,7 +87,7 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         print('input_mask        ',input_mask)
         print('segment_ids          ',segment_ids)
         print('label_id            ',label_id)
-
+    print('label_map         ',label_map)
 
     return features
 
