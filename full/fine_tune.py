@@ -98,7 +98,6 @@ def main():
     #用于使 Python 程序能够更容易地从命令行接受参数。这对于创建可配置的脚本或应用程序非常有用，因为你可以在不修改代码的情况下改变程序的行为。
     args = parser.parse_args()
     #使用参数
-    print("args.input       ",args.input)
     
     ##################### 設定設備(cpu或gpu) #####################
     if args.local_rank == -1 or args.no_cuda:
