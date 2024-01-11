@@ -70,8 +70,8 @@ def main():
     parser.add_argument("--cache_dir", default="", type=str)#緩存目錄
     parser.add_argument("--max_seq_length", default=128, type=int)#最大序列長度
 
-    parser.add_argument("--do_train", action='store_true')#是否經過訓練
-    #, default=True 帶鰾不管有沒有do_train，都默認有，並執行程式
+    parser.add_argument("--do_train", action='store_true', default=True)#是否經過訓練
+    #, default=True 代表不管有沒有do_train(打在if __name__ == "__main__":)之中，都默認有，並執行程式
     parser.add_argument("--do_eval", action='store_true', default=True)#是否進行評估
     parser.add_argument("--do_lower_case", action='store_true')#是否將文本轉為小寫
 
@@ -145,13 +145,17 @@ def main():
     tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
     #args.bert_model 是一个命令行参数，它表示BERT模型的名称或路径
     train_examples = processor.get_train_examples(args.data_dir)
-
+    
+    #验证训练样本数量
     num_train_optimization_steps = None
     if args.do_train:
         num_train_optimization_steps = int(
             len(train_examples) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
+        print("num_train_optimization_steps")
         if args.local_rank != -1:
             num_train_optimization_steps = num_train_optimization_steps // torch.distributed.get_world_size()
+    
+    print("Number of training optimization steps: ", num_train_optimization_steps)
 
     
     #### Prepare model
