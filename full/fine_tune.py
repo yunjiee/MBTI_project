@@ -61,7 +61,9 @@ def main():
     #调用定义了一个命令行参数的规则，包括如何解析该参数以及该参数的一些元数据 
     #参数名称以两个连字符（--）开头，它被视为一个可选参数(是那些在命令行中可以省略的参数。意味着在命令行中使用这些参数时，需要使用其完整的名称)
     #--沒修改，默认为 "./"（当前目录）
+    #parser.add_argument("--data_dir", default="./MBTI_project/full/data/", type=str)#數據目錄
     parser.add_argument("--data_dir", default="./MBTI_project/full/data/", type=str)#數據目錄
+ 
     ##data_dire資料夾內要有: train.csv 用于训练，dev.csv 或 eval.csv 用于模型评估
     parser.add_argument("--bert_model", default="bert-base-uncased", type=str)#使用的bert模型
     parser.add_argument("--output_dir", default="./MBTI_project/full/output/", type=str)#輸出目錄
@@ -96,7 +98,7 @@ def main():
     #用于使 Python 程序能够更容易地从命令行接受参数。这对于创建可配置的脚本或应用程序非常有用，因为你可以在不修改代码的情况下改变程序的行为。
     args = parser.parse_args()
     #使用参数
-    #print(args.input)
+    print("args.input       ",args.input)
     
     ##################### 設定設備(cpu或gpu) #####################
     if args.local_rank == -1 or args.no_cuda:
@@ -243,10 +245,12 @@ def main():
         # If we save using the predefined names, we can load using `from_pretrained`
         output_model_file = os.path.join(args.output_dir, WEIGHTS_NAME)
         output_config_file = os.path.join(args.output_dir, CONFIG_NAME)
-        ####
+        
+        #### 保存資料的內容####
         #保存模型的状态字典（state_dict），这包含了模型的所有权重和偏差参数。
         torch.save(model_to_save.state_dict(), output_model_file)
         model_to_save.config.to_json_file(output_config_file) #将模型的配置保存为 JSON 文件
+        # 保存分词器的词汇表
         tokenizer.save_vocabulary(args.output_dir) #用于模型的分词器保存到指定目录。
         
         #从保存的文件中加载训练后的模型和分词器。

@@ -34,4 +34,3 @@ def get_optimizer(args, model, num_train_optimization_steps):
                          t_total=num_train_optimization_steps)
     return optimizer
 # 调用 get_optimizer 时传递 t_total 参数，或者设置一个合适的值
-#optimizer = get_optimizer(args, model, num_train_optimization_steps, t_total)

@@ -37,7 +37,7 @@ def dataset_exporter(train, dev, directory):
         writer.writerows(dev)
 
 #lines = combine("./dataset")
-path = "./MBTI_project/full/data/processed_all_posts_data.csv"
+path = "./MBTI_project/full/data/1processed_all_posts_data.csv"
 directory = "./MBTI_project/full/data"  # 保存文件的目录
 
 lines = combine(path)
