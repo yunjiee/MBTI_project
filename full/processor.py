@@ -69,12 +69,14 @@ class PersonalityProcessor(DataProcessor):
         self.mode = self.mode.upper()
 
     #獲取訓練和驗證數據的方式
-    ############數據讀取的轉換流程部分##############
+    ############ 數據讀取的轉換流程部分 ##############
     #從从指定的目录data_dir中獲取训练和驗證的數據集。
+    
     def get_train_examples(self, data_dir):
         #create_examples 方法用于将读取的数据转换为InputExample的例子
         return self.create_examples(self._read_tsv(os.path.join(data_dir, "train.csv")), "train")
         #os.path.join(data_dir, "train.csv")生成完整的文件路徑
+    
     def get_dev_examples(self, data_dir):
         return self.create_examples(self._read_tsv(os.path.join(data_dir, "dev.csv")), "dev")
     #_read_tsv 方法用于读取以制表符分隔的值（TSV）文件，并返回每行的数据
@@ -92,39 +94,45 @@ class PersonalityProcessor(DataProcessor):
             #檢查標籤是否已存在於labels_list列表中
             if i.label not in labels_list:
                 labels_list.append(i.label)
-                print("標籤在其中")
+                #print("標籤在其中")
         return labels_list
 
     #創建例子的方法
     def create_examples(self, lines, set_type):
-        print(f"一共執行幾行: {len(lines)}")
+        #print(f"一共執行幾行: {len(lines)}")
         examples = [] #設一個空list
         for (i, line) in enumerate(lines):
-            print(f"準備行數 {i}: 內容{line}")
+            #print(f"準備行數 {i}: 內容{line}")
             if (i == 0): continue
             id_num = "%s-%s" % (set_type, i)
             #id_num 每个数据样本生成的唯一标识符
             text = line[1]
             text = preprocess_text(text)
+            #print(text)
             #針對標籤進行確認
             label = line[0]
             label = re.sub("[^a-zA-Z]", '', label)
             label = label.lower()
-            print("全部",label)
+            #print("這筆類型",label)
             if (len(label) > 4): continue
             #從四個維度
-            if (self.mode == "E/I" or self.mode == "I/E"): label = label[0],print(label)
+            if (self.mode == "E/I" or self.mode == "I/E"): label = label[0]
             elif (self.mode == "N/S" or self.mode == "S/N"): label = label[1]
             elif (self.mode == "T/F" or self.mode == "F/T"): label = label[2]
             elif (self.mode == "J/P" or self.mode == "P/J"): label = label[3]
-            #舉例:用於簡單序列分類任務的數據結構
             examples.append(InputExample(guid=id_num, text=text, label=label))
         return examples
+#self 不是一个传递给方法的参数，而是一个在方法定义中用来引用对象本身的约定
 
 data_dir = "./MBTI_project/full/data"
 #data_dir = "/content/drive/My Drive/full/data"
 processor = PersonalityProcessor("YOUR_MODE")  # 替换为您的模式
+#PersonalityProcessor 类的构造函数接受一个 mode 参数，用于指定处理数据的模式（可能与 MBTI 类型的处理方式有关）
 train_examples = processor.get_train_examples(data_dir)
 dev_examples = processor.get_dev_examples(data_dir)
-print("11111111111111111111111",train_examples)
-print("22222222222222222222222",dev_examples)
+'''
+print("11111111111111111111111訓練的資料",train_examples)
+print("22222222222222222222222驗證的資料",dev_examples)
+for example in train_examples:
+    print(f"GUID: {example.guid}, Text: {example.text}, Label: {example.label}")
+'''
