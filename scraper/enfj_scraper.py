@@ -1,5 +1,6 @@
 import pandas as pd
 from bs4 import BeautifulSoup
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -111,10 +112,10 @@ def crawl_enfj_forum(base_url, author_limit, output_path="enfj_posts_data.csv"):
 base_forum_url = "https://www.personalitycafe.com/forums/enfj-forum-the-protectors.17/"
 
 # 設定要爬取的作者數目
-author_limit = 500
+author_limit = 40
 
 # 設定輸出檔案的路徑
-output_csv_path = "data_personality/enfj_data.csv"
+output_csv_path = "./MBTI_project/data_personality/enfj_data.csv"
 
 # 爬取資料
 all_posts_data = crawl_enfj_forum(base_forum_url, author_limit, output_path=output_csv_path)
