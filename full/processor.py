@@ -10,9 +10,7 @@ from clean import preprocess_text
 class InputExample(object):
     """A single training/test example for simple sequence classification."""
     def __init__(self, guid, text, label=None):
-        print("在執行InputExample")
         self.guid = guid #self:看guid的屬性和方法#guid有點類似於地標
-        print("1111 guid 1111",guid)
         #guid=>目的用於區分不同樣本
         self.text = text #=>樣本的文本內容
         self.label = label#=>樣本的標籤(樣本是可選的，因為測試時不需要標籤)
@@ -124,12 +122,12 @@ class PersonalityProcessor(DataProcessor):
         return examples
 #self 不是一个传递给方法的参数，而是一个在方法定义中用来引用对象本身的约定
 
-data_dir = "./MBTI_project/full/data"
+#data_dir = "./MBTI_project/full/data"
 #data_dir = "/content/drive/My Drive/full/data"
-processor = PersonalityProcessor("YOUR_MODE")  # 替换为您的模式
+#processor = PersonalityProcessor("YOUR_MODE")  # 替换为您的模式
 #PersonalityProcessor 类的构造函数接受一个 mode 参数，用于指定处理数据的模式（可能与 MBTI 类型的处理方式有关）
-train_examples = processor.get_train_examples(data_dir)
-dev_examples = processor.get_dev_examples(data_dir)
+#train_examples = processor.get_train_examples(data_dir)
+#dev_examples = processor.get_dev_examples(data_dir)
 '''
 print("11111111111111111111111訓練的資料",train_examples)
 print("22222222222222222222222驗證的資料",dev_examples)
