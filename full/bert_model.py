@@ -1,8 +1,10 @@
 import os
+from transformers import BertForSequenceClassification
 #pip install pytorch-pretrained-bert
-from pytorch_pretrained_bert.modeling import BertForSequenceClassification
-from pytorch_pretrained_bert.optimization import BertAdam
+#from pytorch_pretrained_bert.modeling import BertForSequenceClassification
+#from pytorch_pretrained_bert.optimization import BertAdam
 from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE, WEIGHTS_NAME, CONFIG_NAME
+from torch.optim import AdamW
 
 #獲取bert模型 
 def get_bert_model(args, num_labels):
@@ -27,10 +29,16 @@ def get_optimizer(args, model, num_train_optimization_steps):
         #對於bias參數，weight_decay'設為0.0
         {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
         ]
+    
+    optimizer = AdamW(model.parameters(),
+                  lr=args.learning_rate,
+                  eps=args.adam_epsilon)
+    
+    '''
     #創建BertAdam優化器
     optimizer = BertAdam(optimizer_grouped_parameters,
                          lr=args.learning_rate,
                          warmup=args.warmup_proportion,
-                         t_total=num_train_optimization_steps)
+                         t_total=num_train_optimization_steps)'''
     return optimizer
 # 调用 get_optimizer 时传递 t_total 参数，或者设置一个合适的值
