@@ -122,8 +122,9 @@ class PersonalityProcessor(DataProcessor):
         return examples
 
 data_dir = "./MBTI_project/full/data"
+#data_dir = "/content/drive/My Drive/full/data"
 processor = PersonalityProcessor("YOUR_MODE")  # 替换为您的模式
 train_examples = processor.get_train_examples(data_dir)
 dev_examples = processor.get_dev_examples(data_dir)
-#print("11111111111111111111111",train_examples)
-#print("22222222222222222222222",dev_examples)
+print("11111111111111111111111",train_examples)
+print("22222222222222222222222",dev_examples)
