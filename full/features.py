@@ -2,6 +2,7 @@
 #用于存储处理后的文本数据 
 #InputFeatures 是對象的列表，每个对象都包含了一个训练/评估样本的轉換後的數據。
 #这些数据可以直接用于 BERT 模型的训练或评估
+import re
 
 class InputFeatures(object):
     def __init__(self, input_ids, input_mask, segment_ids, label_id):
@@ -21,11 +22,20 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
     label_map = {label : i for i, label in enumerate(label_list)}
     features = []
     for (ex_index, example) in enumerate(examples):
+        print('example.text          ',example.text)
+        #segments = re.split(r'[.!?,]', example.text)  # 這裡使用了句號、問號和驚嘆號作為分段標記，你可以根據需要調整
+        #for segment in segments:
+        #    segment = segment.strip()  # 去除分段文本兩側的空白
+        #    if not segment:
+        #        continue  # 跳過空的分段
         
+        # 對每個分段的文本進行分詞和處理
+        #tokens = tokenizer.tokenize(segment)
+        #print('segment          ',segment)
+
         #####我在想是不是需要把每句每具的斷開########
         #####他的斷詞tokenizer套件是補需要修改#######
         tokens = tokenizer.tokenize(example.text)
-        print('example.text          ',example.text)
         print('最原始的tokens             ',tokens)
 
         if len(tokens) > max_seq_length - 2:

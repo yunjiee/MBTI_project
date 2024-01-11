@@ -46,7 +46,8 @@ class DataProcessor(object):
     def _read_tsv(cls, input_file, quotechar=None):
         """Reads a tab separated value file.制表符分隔"""
         with open(input_file, "r", encoding="utf-8") as f:
-            reader = csv.reader(f, quotechar=quotechar)
+            #reader = csv.reader(f, quotechar=quotechar)
+            reader = csv.reader(f)
             lines = []
             for line in reader:
                 if len(line) == 2:
@@ -94,10 +95,11 @@ class PersonalityProcessor(DataProcessor):
                 labels_list.append(i.label)
                 #print("標籤在其中")
         return labels_list
-
+#除以分成幾段，也就是一次送進去17比
     #創建例子的方法
     def create_examples(self, lines, set_type):
-        #print(f"一共執行幾行: {len(lines)}")
+        print(f"一共執行幾行: {len(lines)}")
+        print(f"一共執行幾行: {len(lines)}")
         examples = [] #設一個空list
         for (i, line) in enumerate(lines):
             #print(f"準備行數 {i}: 內容{line}")
