@@ -64,6 +64,6 @@ for mbti_type in mbti_types:
     data = data[['type', 'processed_content']]
     all_data = pd.concat([all_data, data], ignore_index=True)
     
-all_data.to_csv('./MBTI_project/full/data/1processed_all_posts_data.csv', index=False)
+#all_data.to_csv('./MBTI_project/full/data/1processed_all_posts_data.csv', index=False)
 
-print("All processed data saved to:")
+#print("All processed data saved to:")
