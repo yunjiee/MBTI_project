@@ -5,22 +5,28 @@
 
 class InputFeatures(object):
     def __init__(self, input_ids, input_mask, segment_ids, label_id):
-        self.input_ids = input_ids
-        self.input_mask = input_mask
-        self.segment_ids = segment_ids
-        self.label_id = label_id
-        print('111 InputFeatures 111')
+        self.input_ids = input_ids #把前後句子，分為0或是1來判斷
+        print('input_ids1          ',input_ids)
+        self.input_mask = input_mask #标记序列中哪些位置是真实Token，哪些是填充的
+        print('input_mask1        ',input_mask)
+        self.segment_ids = segment_ids #区分两个序列的段ID（在处理两个序列时使用）
+        print('segment_ids1            ',segment_ids)
+        self.label_id = label_id #样本的标签ID
+        print('label_id1            ',label_id)
         
 
 def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer):
     """Loads a data file into a list of `InputBatch`s."""
 
     label_map = {label : i for i, label in enumerate(label_list)}
-    print("111 label_map 111",label_map)
     features = []
     for (ex_index, example) in enumerate(examples):
-
+        
+        #####我在想是不是需要把每句每具的斷開########
+        #####他的斷詞tokenizer套件是補需要修改#######
         tokens = tokenizer.tokenize(example.text)
+        print('example.text          ',example.text)
+        print('最原始的tokens             ',tokens)
 
         if len(tokens) > max_seq_length - 2:
             tokens = tokens[:(max_seq_length - 2)]
@@ -45,7 +51,10 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         # the entire model is fine-tuned.
         #当处理两个序列（例如，两个句子）时，它们被连接在一起
         #[SEP] 用于明确地分隔两个序列或表示单个序列的结束。
+        
         tokens = ["[CLS]"] + tokens + ["[SEP]"]
+        print('加上後的tokens             ',tokens)
+
         segment_ids = [0] * len(tokens)
         #input_ids : 代表 tokens 的数字 ID 序列
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
@@ -65,7 +74,6 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         assert len(input_ids) == max_seq_length
         assert len(input_mask) == max_seq_length
         assert len(segment_ids) == max_seq_length
-        print('111 convert_examples_to_features 111')
         #label_id：序列的标签 ID，用于训练或评估
         label_id = label_map[example.label]
 
@@ -74,4 +82,21 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
                               input_mask=input_mask,
                               segment_ids=segment_ids,
                               label_id=label_id))
+        
+        print('input_ids          ',input_ids)
+        print('input_mask        ',input_mask)
+        print('segment_ids          ',segment_ids)
+        print('label_id            ',label_id)
+    print('label_map         ',label_map)
+
     return features
+
+
+'''
+from processor import PersonalityProcessor
+data_dir = "./MBTI_project/full/data"
+processor = PersonalityProcessor("YOUR_MODE")  # 替换为您的模式
+train_examples = processor.get_train_examples(data_dir)
+
+train_features = convert_examples_to_features(train_examples, label_list, args.max_seq_length, tokenizer)
+'''
