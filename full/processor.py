@@ -91,7 +91,7 @@ class PersonalityProcessor(DataProcessor):
             #檢查標籤是否已存在於labels_list列表中
             if i.label not in labels_list:
                 labels_list.append(i.label)
-                print("標籤在其中")
+                #print("標籤在其中")
         return labels_list
 
     #創建例子的方法
@@ -112,13 +112,14 @@ class PersonalityProcessor(DataProcessor):
             print("全部",label)
             if (len(label) > 4): continue
             #從四個維度
-            if (self.mode == "E/I" or self.mode == "I/E"): label = label[0],print(label)
+            if (self.mode == "E/I" or self.mode == "I/E"): label = label[0]
             elif (self.mode == "N/S" or self.mode == "S/N"): label = label[1]
             elif (self.mode == "T/F" or self.mode == "F/T"): label = label[2]
             elif (self.mode == "J/P" or self.mode == "P/J"): label = label[3]
             #舉例:用於簡單序列分類任務的數據結構
             examples.append(InputExample(guid=id_num, text=text, label=label))
         return examples
+        
 '''
 #data_dir = "./MBTI_project/full/data"
 data_dir = "/content/drive/My Drive/full/data"
