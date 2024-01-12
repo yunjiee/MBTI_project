@@ -4,6 +4,8 @@
 #parser.add_argument("--output_dir", default="./output/", type=str)
 #=>都測試好後,再來看base-large的部分
 
+#%%writefile '/content/drive/My Drive/full/fine_tune_save.py'
+
 from __future__ import absolute_import, division, print_function
 
 #用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
@@ -129,7 +131,7 @@ def main():
 
     # 在开始训练之前加载检查点
     last_epoch = 0
-    checkpoint_path = os.path.join(args.output_dir, 'last_checkpoint.pt')
+    checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
     if os.path.exists(checkpoint_path):
         last_epoch = load_checkpoint(model, optimizer, checkpoint_path)
     else:
@@ -172,7 +174,6 @@ def main():
         }
         torch.save(state, path)
 
-    
 
     global_step = 0
     ### 模型訓練 ###
@@ -224,7 +225,8 @@ def main():
                     optimizer.zero_grad() #清除梯度信息，为下一个批次做准备
                     global_step += 1
                 print("訓練完成")
-            checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{epoch}.pt')
+
+            checkpoint_path = os.path.join(args.output_dir, 'checkpoint_epoch.pt')
             save_checkpoint(model, optimizer, epoch, checkpoint_path)
             print("第{}週期 訓練完成".format(epoch))
 
