@@ -1,4 +1,3 @@
-已使用 95% 的儲存空間 … 如果容量用盡，日後就沒有足夠的儲存空間能建立、編輯和上傳檔案。現在購買 100 GB 儲存空間，可享 3 個月折扣，每月只要 $65.00 $16.25。
 import pandas as pd
 import re
 from nltk.tokenize import word_tokenize
@@ -49,7 +48,7 @@ def preprocess_text(text):
     text = re.sub(r"\!{2,}", " ! ", text) #去除多餘空
     #print("33333333333333333333333",text)
     return text
-    
+
 '''
 for mbti_type in mbti_types:
     #file_name = f'./MBTI_project/data_personality/{mbti_type}_posts_data.csv'
