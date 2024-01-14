@@ -1,15 +1,9 @@
-###############"""BERT finetuning runner.微調"""########################
-#理想狀態來說: 應該只要給他下面兩個資料data_dir和output_dir，就可以先跑跑看
-#parser.add_argument("--data_dir", default="./", type=str)
-#parser.add_argument("--output_dir", default="./output/", type=str)
-#=>都測試好後,再來看base-large的部分
-
 #%%writefile '/content/drive/My Drive/full/fine_tune_save.py'
-
 from __future__ import absolute_import, division, print_function
 
 #用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
 #!pip install pytorch-pretrained-bert
+
 
 import argparse #解析命令行参数 =>运行程序时从命令行指定这些参数
 import csv
@@ -108,7 +102,18 @@ def main():
     args = parser.parse_args()
 
     ##################### 設定設備(cpu或gpu) #####################
-    device = torch.device("cpu")
+    #device = torch.device("cpu")
+    if args.local_rank == -1 or args.no_cuda:
+        device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
+        n_gpu = torch.cuda.device_count()
+    else:
+        torch.cuda.set_device(args.local_rank)
+        device = torch.device("cuda", args.local_rank)
+        n_gpu = 1
+        # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
+        torch.distributed.init_process_group(backend='nccl')
+
+
     ####################### 梯度累积步骤设置: #####################
     if args.gradient_accumulation_steps < 1:
         raise ValueError("Invalid gradient_accumulation_steps parameter: {}, should be >= 1".format(args.gradient_accumulation_steps))
@@ -125,16 +130,7 @@ def main():
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
         print(f"输出目录 {args.output_dir} 不存在，已创建。")
-    
-    # 在开始训练之前加载检查点
-    last_epoch = 0
-    checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
 
-    if os.path.exists(checkpoint_path):
-        last_epoch = load_checkpoint(model, optimizer, checkpoint_path)
-        print(last_epoch)
-    else:
-        print(f"检查点文件 {checkpoint_path} 不存在，从头开始训练。")
 
     #代码使用 PersonalityProcessor 来处理数据，获取训练样本和标签列表。这些标签用于模型训练过程中的分类任务。
     processor = PersonalityProcessor(args.mode)
@@ -177,6 +173,15 @@ def main():
             print("Checkpoint saved successfully")
         except Exception as e:
             print("Error saving checkpoint:", e)
+    # 在开始训练之前加载检查点
+    last_epoch = 0
+    checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
+
+    if os.path.exists(checkpoint_path):
+        last_epoch = load_checkpoint(model, optimizer, checkpoint_path)
+        print(last_epoch)
+    else:
+        print(f"检查点文件 {checkpoint_path} 不存在，从头开始训练。")
 
     global_step = 0
 
@@ -235,7 +240,7 @@ def main():
                 print("訓練完成")
 
             checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
-            save_checkpoint(epoch, model, optimizer, checkpoint_path)
+            save_checkpoint(model, optimizer, epoch, checkpoint_path)
             print("第{}週期 訓練完成".format(epoch))
 
     ####### 如果成功執行，它会将训练过程中得到的模型和相关配置保存到指定的目录中，並可以重新使用這數據 #######
