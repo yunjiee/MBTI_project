@@ -123,6 +123,9 @@ def main():
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
+    if n_gpu > 0:
+        torch.cuda.manual_seed_all(args.seed)
+
     #检查训练和评估标志：这部分代码确保至少进行训练(do_train)或评估(do_eval)中的一个
     if not args.do_train and not args.do_eval:
         raise ValueError("At least one of `do_train` or `do_eval` must be True.")
@@ -161,13 +164,14 @@ def main():
     #### Prepare optimizer
     optimizer = get_optimizer(args, model, num_train_optimization_steps)
 
-    def save_checkpoint(model, optimizer, epoch, path):
+    def save_checkpoint(model, optimizer, epoch, path, loss_history):
         try:
             print("Saving checkpoint for epoch", epoch, "at", path)
             state = {
                 'epoch': epoch,
                 'state_dict': model.state_dict(),
-                'optimizer': optimizer.state_dict()
+                'optimizer': optimizer.state_dict(),
+                'loss_history': loss_history  # 添加 loss_history 到状态字典
             }
             torch.save(state, path)
             print("Checkpoint saved successfully")
@@ -200,6 +204,7 @@ def main():
         #保存模型，将训练后的模型及其配置保存到文件中
         #int(args.num_train_epochs)
         #for epoch in trange(args.num_train_epochs):
+        loss_history = []
         for epoch in trange(start_epoch,args.num_train_epochs):
             print("開始訓練 第{}週期".format(epoch))
             tr_loss = 0 #訓練週期的損失
@@ -219,8 +224,10 @@ def main():
 
                 #计算预测和真实标签之间的损失
                 loss_fct = CrossEntropyLoss()
+                #loss= 模型的预测与真实标签之间的差异
                 loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
 
+                #通过对损失进行平均化，您可以减小梯度计算的方差，从而更稳定地训练模型
                 loss = loss.mean()
                 if args.gradient_accumulation_steps > 1:
                     #有限的 GPU 内存下有助于使用更大的批次大小。
@@ -228,19 +235,24 @@ def main():
 
                 loss.backward() #反向传播以计算梯度
 
-                #tr_loss 随着每个训练周期逐渐减少，表明模型正在学习并提高其预测的准确性。
+                #tr_loss 随着每个训练周期逐渐减少，表明模型正在学习并提高其预测的准确性。(是整个训练周期（epoch）内的总损失)
                 tr_loss += loss.item()
                 print("tr_loss              ",tr_loss)
+                 # 计算每个训练周期的平均损失
+                avg_loss = tr_loss / nb_tr_steps
+                loss_history.append(avg_loss)
+
                 nb_tr_examples += input_ids.size(0)
                 nb_tr_steps += 1
                 if (step + 1) % args.gradient_accumulation_steps == 0:
                     optimizer.step() #更新模型參數
                     optimizer.zero_grad() #清除梯度信息，为下一个批次做准备
                     global_step += 1
+                # 计算每个训练周期的平均损失
                 print("訓練完成")
 
             checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
-            save_checkpoint(model, optimizer, epoch, checkpoint_path)
+            save_checkpoint(model, optimizer, epoch, checkpoint_path, loss_history)
             print("第{}週期 訓練完成".format(epoch))
 
     ####### 如果成功執行，它会将训练过程中得到的模型和相关配置保存到指定的目录中，並可以重新使用這數據 #######
