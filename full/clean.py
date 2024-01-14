@@ -28,16 +28,14 @@ def preprocess_text(text):
     text = re.sub(pattern, 'type', text)
     text = re.sub(r"\'s", " \'s", text) 
     text = re.sub(r"\'ve", " \'ve", text) 
-    print("22222222222222222222222",text)
-
     text = re.sub(r"\'t", " \'t", text) 
     text = re.sub(r"\'re", " \'re", text) 
     text = re.sub(r"\'d", " \'d", text) 
     text = re.sub(r"\'ll", " \'ll", text) 
     text = re.sub(r", ", " , ", text)
-    print("11111111111111111111111",text)
+    #print("11111111111111111111111",text)
     text = re.sub(r"\. ", " . ", text) 
-    print("22222222222222222222222",text)
+    #print("22222222222222222222222",text)
     text = re.sub(r"'", " ' ", text)  
     text = re.sub(r"!", " ! ", text) 
     text = re.sub(r"\(", " ( ", text) 
@@ -50,9 +48,9 @@ def preprocess_text(text):
     text = re.sub(r"\!{2,}", " ! ", text) #去除多餘空
     #print("33333333333333333333333",text)
     return text
-'''
+
 for mbti_type in mbti_types:
-    file_name = f'./MBTI_project/data_personality/{mbti_type}_posts_data.csv'
+    #file_name = f'./MBTI_project/data_personality/{mbti_type}_posts_data.csv'
     data = pd.read_csv(file_name)
     data = data.dropna(subset=['Content'])
     data = data[data['Content'].str.strip().astype(bool)]  # 然后删除内容仅包含空格的行
@@ -65,7 +63,8 @@ for mbti_type in mbti_types:
 
     data = data[['type', 'processed_content']]
     all_data = pd.concat([all_data, data], ignore_index=True)
- '''   
+    
 #all_data.to_csv('./MBTI_project/full/data/processed_all_posts_data.csv', index=False)
 
 #print("All processed data saved to:")
+'''
