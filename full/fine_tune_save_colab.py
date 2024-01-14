@@ -239,8 +239,6 @@ def main():
                 tr_loss += loss.item()
                 print("tr_loss              ",tr_loss)
                  # 计算每个训练周期的平均损失
-                avg_loss = tr_loss / nb_tr_steps
-                loss_history.append(avg_loss)
 
                 nb_tr_examples += input_ids.size(0)
                 nb_tr_steps += 1
@@ -250,7 +248,9 @@ def main():
                     global_step += 1
                 # 计算每个训练周期的平均损失
                 print("訓練完成")
-
+                
+            avg_loss = tr_loss / nb_tr_steps
+            loss_history.append(avg_loss)
             checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
             save_checkpoint(model, optimizer, epoch, checkpoint_path, loss_history)
             print("第{}週期 訓練完成".format(epoch))
