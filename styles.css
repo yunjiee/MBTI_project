@@ -182,3 +182,58 @@ body {
     width: 250px;
   }
 }
+
+#loadingSpinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* deatil.html */
+@media screen and (min-width: 600px) {
+  .photo-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .photo-row {
+    flex-basis: 50%; /* 兩列的寬度各占 48% */
+    margin-bottom: 20px;
+  }
+
+  .photo-item img {
+    width: 700px; /* 你想要的寬度，以像素為單位 */
+    height: auto; /* 高度自動調整以保持原始比例 */
+    border: 2px solid #8B4513;
+    border-radius: 8px;
+    margin-right: 100px;
+    margin-left: 100px;
+    margin-bottom: 15;
+    cursor: pointer; /* 添加游標指示可以點擊 */
+  }
+  
+  /* 定義放大效果的樣式 */
+  .enlarged-image {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
+    max-height: 90%;
+    border: 2px solid #8B4513;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+  }  
+}
+
