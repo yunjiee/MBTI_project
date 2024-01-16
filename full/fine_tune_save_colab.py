@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function
 #用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
 #!pip install pytorch-pretrained-bert
 
-
 import argparse #解析命令行参数 =>运行程序时从命令行指定这些参数
 import csv
 import os
@@ -80,7 +79,7 @@ def main():
     parser.add_argument("--eval_batch_size", default=8, type=int)#評估時的批次大小
     parser.add_argument("--learning_rate", default=5e-5, type=float)#學習率
 
-    parser.add_argument("--num_train_epochs", default=3, type=int) #執行的次數
+    parser.add_argument("--num_train_epochs", default=23, type=int) #執行的次數
     parser.add_argument("--warmup_proportion", default=0.1, type=float)
     parser.add_argument("--no_cuda", action='store_true')
 
@@ -103,13 +102,16 @@ def main():
 
     ##################### 設定設備(cpu或gpu) #####################
     #device = torch.device("cpu")
+    args.no_cuda = True
     if args.local_rank == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         n_gpu = torch.cuda.device_count()
+        print('使用GPU')
     else:
         torch.cuda.set_device(args.local_rank)
         device = torch.device("cuda", args.local_rank)
         n_gpu = 1
+        print('使用CPU')
         # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
         torch.distributed.init_process_group(backend='nccl')
 
@@ -182,16 +184,18 @@ def main():
     checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
 
     if os.path.exists(checkpoint_path):
+
         last_epoch = load_checkpoint(model, optimizer, checkpoint_path)
-        print(last_epoch)
+        print('last_epoch的次數',last_epoch)
     else:
         print(f"检查点文件 {checkpoint_path} 不存在，从头开始训练。")
 
     global_step = 0
+    print("主程序中的 checkpoint 路径:", checkpoint_path)
 
-    checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
     # 调用load_checkpoint函数来加载检查点并继续训练
-    start_epoch = load_checkpoint(model, optimizer, checkpoint_path)
+    start_epoch = load_checkpoint(model, optimizer, checkpoint_path)+1
+    print('start_epoch的次數',start_epoch)
     ### 模型訓練 ###
     if args.do_train:
         ##### 準備使用的訓練數據 ####
@@ -248,7 +252,7 @@ def main():
                     global_step += 1
                 # 计算每个训练周期的平均损失
                 print("訓練完成")
-                
+
             avg_loss = tr_loss / nb_tr_steps
             loss_history.append(avg_loss)
             checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
