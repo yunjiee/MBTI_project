@@ -4,7 +4,7 @@
 #parser.add_argument("--output_dir", default="./output/", type=str)
 #=>都測試好後,再來看base-large的部分
 
-#%%writefile '/content/drive/My Drive/full/fine_tune_save.py'
+%%writefile '/content/drive/My Drive/full/fine_tune_save.py'
 
 from __future__ import absolute_import, division, print_function
 
@@ -105,7 +105,7 @@ def main():
     #### 解析从命令行传递给 Python 脚本的参数 ####
     #用于使 Python 程序能够更容易地从命令行接受参数。这对于创建可配置的脚本或应用程序非常有用，因为你可以在不修改代码的情况下改变程序的行为。
 
-    args = parser.parse_args()        
+    args = parser.parse_args()
     ##################### 設定設備(cpu或gpu) #####################
     device = torch.device("cpu")
     ####################### 梯度累积步骤设置: #####################
@@ -119,7 +119,7 @@ def main():
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-    
+
     #检查训练和评估标志：这部分代码确保至少进行训练(do_train)或评估(do_eval)中的一个
     if not args.do_train and not args.do_eval:
         raise ValueError("At least one of `do_train` or `do_eval` must be True.")
@@ -136,7 +136,7 @@ def main():
         last_epoch = load_checkpoint(model, optimizer, checkpoint_path)
     else:
         print(f"检查点文件 {checkpoint_path} 不存在，从头开始训练。")
-    
+
     #代码使用 PersonalityProcessor 来处理数据，获取训练样本和标签列表。这些标签用于模型训练过程中的分类任务。
     processor = PersonalityProcessor(args.mode)
     label_list = processor.get_labels(args.data_dir)
@@ -147,7 +147,7 @@ def main():
     #创建一个BERT分词器（Tokenizer），它用于将文本数据转换成BERT模型能够理解的格式。
     tokenizer = BertTokenizer.from_pretrained(args.bert_model, do_lower_case=args.do_lower_case)
     #args.bert_model 是一个命令行参数，它表示BERT模型的名称或路径
-    
+
     train_examples = processor.get_train_examples(args.data_dir)
     if not train_examples:
         raise ValueError("No training examples returned by the processor.")
@@ -165,15 +165,17 @@ def main():
 
     #### Prepare optimizer
     optimizer = get_optimizer(args, model, num_train_optimization_steps)
-            
+
     def save_checkpoint(model, optimizer, epoch, path):
+        print("Saving checkpoint for epoch", epoch, "at", path)
         state = {
             'epoch': epoch,
             'state_dict': model.state_dict(),
             'optimizer': optimizer.state_dict()
         }
-        torch.save(state, path)
-
+        #torch.save(state, path)
+        torch.save(model.state_dict(), checkpoint_path)
+        print("Checkpoint saved successfully")
 
     global_step = 0
     ### 模型訓練 ###
