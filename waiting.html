@@ -4,10 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
+  <script src="script.js"></script>
   <title>等待頁面</title>
   <!-- 可以在這裡引入等待頁面的樣式表或其他資源 -->
 </head>
 <body>
+  <div id="navbar">
+    <div id="menuToggle" onclick="toggleSidebar()">&#9776;</div>
+    <div id="logo">--MBTI--</div>
+    <div id="theme">
+      <a href="detail.html">類型介紹</a>
+      <a href="data_support.html">數據支持</a>
+      <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
+      <!-- Add more themes as needed -->
+    </div>
+  </div>
+  
+  <!-- 新增 sidebar -->
+  <div id="sidebar">
+    <a href="detail.html">類型介紹</a>
+    <a href="data_support.html">數據支持</a>
+    <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
+    <!-- Add more themes as needed -->
+  </div>
+
   <div id="loadingSpinner"></div>
   <div id="loadingMessage">
     填寫完成，請稍後...
@@ -16,10 +36,10 @@
   <!-- 這裡可以添加其他等待頁面的內容 -->
 
   <script>
-    // 在等待頁停留10秒後，自動跳轉到結果頁
+    // 在等待頁停留5秒後，自動跳轉到結果頁
     setTimeout(function() {
       window.location.href = "result.html";
-    }, 10000);
+    }, 5000);
   </script>
 </body>
 </html>
