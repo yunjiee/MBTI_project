@@ -1,15 +1,9 @@
-###############"""BERT finetuning runner.微調"""########################
-#理想狀態來說: 應該只要給他下面兩個資料data_dir和output_dir，就可以先跑跑看
-#parser.add_argument("--data_dir", default="./", type=str)
-#parser.add_argument("--output_dir", default="./output/", type=str)
-#=>都測試好後,再來看base-large的部分
-
-%%writefile '/content/drive/My Drive/full/fine_tune_save.py'
-
+#%%writefile '/content/drive/My Drive/full/fine_tune_save.py'
 from __future__ import absolute_import, division, print_function
 
 #用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
 #!pip install pytorch-pretrained-bert
+
 
 import argparse #解析命令行参数 =>运行程序时从命令行指定这些参数
 import csv
@@ -71,7 +65,7 @@ def main():
     parser.add_argument("--data_dir", default="/content/drive/My Drive/full/data/", type=str)#數據目錄
     ##data_dire資料夾內要有: train.csv 用于训练，dev.csv 或 eval.csv 用于模型评估
     parser.add_argument("--bert_model", default="bert-base-uncased", type=str)#使用的bert模型
-    parser.add_argument("--output_dir", default="/content/drive/My Drive/full/output1/", type=str)#輸出目錄
+    parser.add_argument("--output_dir", default="/content/drive/My Drive/full/output/", type=str)#輸出目錄
     #output_dir資料夾: 训练过程中生成的模型和输出数据将保存在这个目录中
 
     parser.add_argument("--cache_dir", default="", type=str)#緩存目錄
@@ -86,7 +80,7 @@ def main():
     parser.add_argument("--eval_batch_size", default=8, type=int)#評估時的批次大小
     parser.add_argument("--learning_rate", default=5e-5, type=float)#學習率
 
-    parser.add_argument("--num_train_epochs", default=30, type=int) #執行的次數
+    parser.add_argument("--num_train_epochs", default=3, type=int) #執行的次數
     parser.add_argument("--warmup_proportion", default=0.1, type=float)
     parser.add_argument("--no_cuda", action='store_true')
 
@@ -106,36 +100,40 @@ def main():
     #用于使 Python 程序能够更容易地从命令行接受参数。这对于创建可配置的脚本或应用程序非常有用，因为你可以在不修改代码的情况下改变程序的行为。
 
     args = parser.parse_args()
+
     ##################### 設定設備(cpu或gpu) #####################
-    device = torch.device("cpu")
+    #device = torch.device("cpu")
+    if args.local_rank == -1 or args.no_cuda:
+        device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
+        n_gpu = torch.cuda.device_count()
+    else:
+        torch.cuda.set_device(args.local_rank)
+        device = torch.device("cuda", args.local_rank)
+        n_gpu = 1
+        # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
+        torch.distributed.init_process_group(backend='nccl')
+
+
     ####################### 梯度累积步骤设置: #####################
     if args.gradient_accumulation_steps < 1:
         raise ValueError("Invalid gradient_accumulation_steps parameter: {}, should be >= 1".format(args.gradient_accumulation_steps))
-
     args.train_batch_size = args.train_batch_size // args.gradient_accumulation_steps
     ### 目的: 为了优化模型的训练过程，使其适应不同的硬件配置 ###
-
     ### 随机数生成的操作（如数据分割、初始化模型权重等）将产生相同的结果 ###
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
+    if n_gpu > 0:
+        torch.cuda.manual_seed_all(args.seed)
 
     #检查训练和评估标志：这部分代码确保至少进行训练(do_train)或评估(do_eval)中的一个
     if not args.do_train and not args.do_eval:
         raise ValueError("At least one of `do_train` or `do_eval` must be True.")
-
     ## 检查输出目录是否存在，如果不存在，则创建它
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
         print(f"输出目录 {args.output_dir} 不存在，已创建。")
 
-    # 在开始训练之前加载检查点
-    last_epoch = 0
-    checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
-    if os.path.exists(checkpoint_path):
-        last_epoch = load_checkpoint(model, optimizer, checkpoint_path)
-    else:
-        print(f"检查点文件 {checkpoint_path} 不存在，从头开始训练。")
 
     #代码使用 PersonalityProcessor 来处理数据，获取训练样本和标签列表。这些标签用于模型训练过程中的分类任务。
     processor = PersonalityProcessor(args.mode)
@@ -166,18 +164,34 @@ def main():
     #### Prepare optimizer
     optimizer = get_optimizer(args, model, num_train_optimization_steps)
 
-    def save_checkpoint(model, optimizer, epoch, path):
-        print("Saving checkpoint for epoch", epoch, "at", path)
-        state = {
-            'epoch': epoch,
-            'state_dict': model.state_dict(),
-            'optimizer': optimizer.state_dict()
-        }
-        #torch.save(state, path)
-        torch.save(model.state_dict(), checkpoint_path)
-        print("Checkpoint saved successfully")
+    def save_checkpoint(model, optimizer, epoch, path, loss_history):
+        try:
+            print("Saving checkpoint for epoch", epoch, "at", path)
+            state = {
+                'epoch': epoch,
+                'state_dict': model.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'loss_history': loss_history  # 添加 loss_history 到状态字典
+            }
+            torch.save(state, path)
+            print("Checkpoint saved successfully")
+        except Exception as e:
+            print("Error saving checkpoint:", e)
+    # 在开始训练之前加载检查点
+    last_epoch = 0
+    checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
+
+    if os.path.exists(checkpoint_path):
+        last_epoch = load_checkpoint(model, optimizer, checkpoint_path)
+        print(last_epoch)
+    else:
+        print(f"检查点文件 {checkpoint_path} 不存在，从头开始训练。")
 
     global_step = 0
+
+    checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
+    # 调用load_checkpoint函数来加载检查点并继续训练
+    start_epoch = load_checkpoint(model, optimizer, checkpoint_path)
     ### 模型訓練 ###
     if args.do_train:
         ##### 準備使用的訓練數據 ####
@@ -189,7 +203,9 @@ def main():
         #深度学习模型的训练循环
         #保存模型，将训练后的模型及其配置保存到文件中
         #int(args.num_train_epochs)
-        for epoch in trange(args.num_train_epochs):
+        #for epoch in trange(args.num_train_epochs):
+        loss_history = []
+        for epoch in trange(start_epoch,args.num_train_epochs):
             print("開始訓練 第{}週期".format(epoch))
             tr_loss = 0 #訓練週期的損失
             ### 準備評估數據 ###
@@ -208,8 +224,10 @@ def main():
 
                 #计算预测和真实标签之间的损失
                 loss_fct = CrossEntropyLoss()
+                #loss= 模型的预测与真实标签之间的差异
                 loss = loss_fct(logits.view(-1, num_labels), label_ids.view(-1))
 
+                #通过对损失进行平均化，您可以减小梯度计算的方差，从而更稳定地训练模型
                 loss = loss.mean()
                 if args.gradient_accumulation_steps > 1:
                     #有限的 GPU 内存下有助于使用更大的批次大小。
@@ -217,19 +235,24 @@ def main():
 
                 loss.backward() #反向传播以计算梯度
 
-                #tr_loss 随着每个训练周期逐渐减少，表明模型正在学习并提高其预测的准确性。
+                #tr_loss 随着每个训练周期逐渐减少，表明模型正在学习并提高其预测的准确性。(是整个训练周期（epoch）内的总损失)
                 tr_loss += loss.item()
                 print("tr_loss              ",tr_loss)
+                 # 计算每个训练周期的平均损失
+
                 nb_tr_examples += input_ids.size(0)
                 nb_tr_steps += 1
                 if (step + 1) % args.gradient_accumulation_steps == 0:
                     optimizer.step() #更新模型參數
                     optimizer.zero_grad() #清除梯度信息，为下一个批次做准备
                     global_step += 1
+                # 计算每个训练周期的平均损失
                 print("訓練完成")
-
-            checkpoint_path = os.path.join(args.output_dir, 'checkpoint_epoch.pt')
-            save_checkpoint(model, optimizer, epoch, checkpoint_path)
+                
+            avg_loss = tr_loss / nb_tr_steps
+            loss_history.append(avg_loss)
+            checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
+            save_checkpoint(model, optimizer, epoch, checkpoint_path, loss_history)
             print("第{}週期 訓練完成".format(epoch))
 
     ####### 如果成功執行，它会将训练过程中得到的模型和相关配置保存到指定的目录中，並可以重新使用這數據 #######
