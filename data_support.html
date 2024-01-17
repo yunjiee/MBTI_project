@@ -5,18 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>資料支援</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="script.js"></script>
 </head>
 <body>
-
-<div id="navbar">
-  <a href="mbti.html">主頁</a>
-  <a href="data_support.html">資料支援</a>
-</div>
-
-<div id="content">
-  <h1>歡迎來到資料支援頁面</h1>
-  <p>這裡提供有關資料支援的內容。</p>
-</div>
+  <div id="navbar">
+    <div id="menuToggle" onclick="toggleSidebar()">&#9776;</div>
+    <div id="logo">--MBTI--</div>
+    <div id="theme">
+      <a href="detail.html">類型介紹</a>
+      <a href="data_support.html">數據支持</a>
+      <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
+      <!-- Add more themes as needed -->
+    </div>
+  </div>
+  
+  <!-- 新增 sidebar -->
+  <div id="sidebar">
+    <a href="detail.html">類型介紹</a>
+    <a href="data_support.html">數據支持</a>
+    <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
+    <!-- Add more themes as needed -->
+  </div>
 
 </body>
 </html>
