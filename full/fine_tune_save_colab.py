@@ -4,12 +4,11 @@ from __future__ import absolute_import, division, print_function
 #用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
 #!pip install pytorch-pretrained-bert
 
-import matplotlib.pyplot as plt
 import argparse #解析命令行参数 =>运行程序时从命令行指定这些参数
 import csv
 import os
 import random
-
+import glob
 import numpy as np
 import torch
 
@@ -40,6 +39,18 @@ from features import convert_examples_to_features
 from dataloader import get_train_dataloader, get_eval_dataloader, get_label_ids
 from bert_model import get_bert_model, get_optimizer
 
+def find_latest_checkpoints(output_dir, num_to_keep=2):
+    checkpoint_files = glob.glob(os.path.join(output_dir, 'checkpoint_epoch_*.pt'))
+    checkpoints = [(os.path.basename(path), int(os.path.basename(path).split('_')[-1].split('.')[0])) for path in checkpoint_files]
+    checkpoints = sorted(checkpoints, key=lambda x: x[1], reverse=True)
+    return checkpoints[:num_to_keep]
+
+def remove_old_checkpoints(output_dir, checkpoints_to_keep):
+    all_checkpoints = set(glob.glob(os.path.join(output_dir, 'checkpoint_epoch_*.pt')))
+    checkpoints_to_keep = set(os.path.join(output_dir, cp[0]) for cp in checkpoints_to_keep)
+    for checkpoint in all_checkpoints - checkpoints_to_keep:
+        os.remove(checkpoint)
+
 #在开始训练的循环之前，检查是否有现有的检查点并加载它。
 def load_checkpoint(model, optimizer, path):
     if os.path.isfile(path):
@@ -52,7 +63,6 @@ def load_checkpoint(model, optimizer, path):
         print("没有找到检查点 '{}'".format(path))
         return 0
 
-
 def main():
     #### 創建一個解析器，用於處理命令行參數 ####
     ###################### 参数解析 (argparse)，可以靈活的取用外部參數 ######################
@@ -62,10 +72,10 @@ def main():
     #调用定义了一个命令行参数的规则，包括如何解析该参数以及该参数的一些元数据
     #参数名称以两个连字符（--）开头，它被视为一个可选参数(是那些在命令行中可以省略的参数。意味着在命令行中使用这些参数时，需要使用其完整的名称)
     #--沒修改，默认为 "./"（当前目录）
-    parser.add_argument("--data_dir", default="/content/drive/My Drive/full/data/", type=str)#數據目錄
+    parser.add_argument("--data_dir", default="/content/drive/My Drive/full/data1/", type=str)#數據目錄
     ##data_dire資料夾內要有: train.csv 用于训练，dev.csv 或 eval.csv 用于模型评估
     parser.add_argument("--bert_model", default="bert-base-uncased", type=str)#使用的bert模型
-    parser.add_argument("--output_dir", default="/content/drive/My Drive/full/output/", type=str)#輸出目錄
+    parser.add_argument("--output_dir", default="/content/drive/My Drive/full/output1/", type=str)#輸出目錄
     #output_dir資料夾: 训练过程中生成的模型和输出数据将保存在这个目录中
 
     parser.add_argument("--cache_dir", default="", type=str)#緩存目錄
@@ -101,7 +111,6 @@ def main():
     args = parser.parse_args()
 
     ##################### 設定設備(cpu或gpu) #####################
-    #device = torch.device("cpu")
     if torch.cuda.is_available():
         device = torch.device("cuda")
         print('使用GPU')
@@ -173,21 +182,16 @@ def main():
             print("Error saving checkpoint:", e)
     # 在开始训练之前加载检查点
     last_epoch = 0
-    checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{prev_epoch}.pt')
-
-    if os.path.exists(checkpoint_path):
-
-        last_epoch = load_checkpoint(model, optimizer, checkpoint_path)
-        print('last_epoch的次數',last_epoch)
-    else:
-        print(f"检查点文件 {checkpoint_path} 不存在，从头开始训练。")
-
     global_step = 0
-    print("主程序中的 checkpoint 路径:", checkpoint_path)
-
-    # 调用load_checkpoint函数来加载检查点并继续训练
-    start_epoch = load_checkpoint(model, optimizer, checkpoint_path)+1
-    print('start_epoch的次數',start_epoch)
+    
+    latest_checkpoints = find_latest_checkpoints(args.output_dir)
+    if latest_checkpoints:
+        latest_checkpoint_path = os.path.join(args.output_dir, latest_checkpoints[0][0])
+        start_epoch = load_checkpoint(model, optimizer, latest_checkpoint_path) + 1
+        print('继续训练从 epoch', start_epoch, '开始')
+    else:
+        start_epoch = 0
+        print("没有找到检查点，将从头开始训练。")
 
     ### 模型訓練 ###
     if args.do_train:
@@ -248,15 +252,12 @@ def main():
 
             avg_loss = tr_loss / nb_tr_steps
             loss_history.append(avg_loss)
-             # 保存当前周期的检查点
+            # 保存当前周期的检查点
             checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{epoch}.pt')
             save_checkpoint(model, optimizer, epoch, checkpoint_path, loss_history)
-
-            # 如果不是第一个周期，再保存上一个周期的检查点
-            if epoch > 1:
-                prev_epoch = epoch - 1
-                prev_checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{prev_epoch}.pt')
-                save_checkpoint(model, optimizer, prev_epoch, prev_checkpoint_path, loss_history)
+            # 检查并保留最新的两个检查点，删除旧的
+            latest_checkpoints = find_latest_checkpoints(args.output_dir)
+            remove_old_checkpoints(args.output_dir, latest_checkpoints)
             print("第{}週期 訓練完成".format(epoch))
 
     ####### 如果成功執行，它会将训练过程中得到的模型和相关配置保存到指定的目录中，並可以重新使用這數據 #######
