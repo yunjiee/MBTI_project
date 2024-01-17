@@ -1,0 +1,268 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+  background-image: url('flowers.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#navbar {
+  background-color: rgba(228, 159, 147, 0.8);
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+#logo {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-right: 0;
+}
+
+#menuToggle {
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+  margin-right: 10px;
+  z-index: 1001;
+}
+
+#theme a {
+  color: white;
+  text-decoration: none;
+  margin-right: 20px;
+  font-size: 18px;
+  position: relative;
+}
+
+#theme a:hover {
+  color: #8B4513;
+  font-weight: bold;
+}
+
+#theme a::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: #8B4513;
+  transition: width 0.3s ease;
+}
+
+#theme a:hover::before {
+  width: 100%;
+}
+
+@media screen and (max-width: 600px) {
+  #navbar {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  #theme a {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}
+
+#inputDescription {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.line1 {
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.line2 {
+  font-size: 18px;
+}
+
+#inputContainer {
+  width: 80%;
+  max-width: 600px;
+  padding: 20px;
+  background-color: rgba(245, 235, 235, 0.8);
+  margin-top: 20px;
+  border-radius: 10px;
+}
+
+#articleInput {
+  width: 90%;
+  padding: 10px;
+  margin-bottom: 10px;
+  aspect-ratio: 2 / 1;
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: background-color 0.3s ease;
+  font-size: 16px;
+}
+
+#articleInput:focus {
+  background-color: rgb(255, 255, 255);
+}
+
+#submitButton {
+  width: 18%;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#errorMessage {
+  color: red;
+  font-size: 14px;
+}
+
+#completionMessage {
+  margin-top: 10px;
+  color: green;
+}
+
+/* Sidebar styles */
+
+#sidebar {
+  position: fixed;
+  top: 50px;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background-color: rgba(248, 244, 244, 0.8);
+  overflow-x: hidden;
+  transition: 0.5s;
+  z-index: 999; /* 將 z-index 設置為比 #navbar 更小的值 */
+  display: flex;
+  flex-direction: column; /* 將子元素排成垂直方向 */
+}
+
+@media screen and (max-width: 600px) {
+  #sidebar {
+    top: 0; /* Adjusted top position for smaller screens */
+  }
+}
+
+#sidebar a {
+  padding: 15px 20px;
+  text-decoration: none;
+  font-size: 18px;
+  color: rgb(44, 44, 44);
+  display: block;
+  transition: 0.3s;
+  order: 1; /* 設置預設順序，讓這些連結排在最下面 */
+  white-space: nowrap; /* 防止文字換行 */
+  overflow: hidden; /* 隱藏多餘文字 */
+  text-align: center; /* 將文字設置在左邊 */
+}
+
+#sidebar a:hover {
+  color: #8B4513;
+}
+
+#sidebar .closebtn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 30px;
+}
+
+/* Sidebar animation */
+
+@keyframes sidebarAnimation {
+  from {
+    width: 0;
+  }
+  to {
+    width: 250px;
+  }
+}
+
+#loadingSpinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* deatil.html */
+@media screen and (min-width: 600px) {
+  .image-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /*將圖片分成 4 列 */
+    gap: 10px; /* 設定圖片之間的間距 */
+  }
+  
+  .image-row {
+    display: flex;
+  }
+  
+  .image {
+    max-width: 250px; /* 設置圖片最大寬度 */
+    max-height: 300px; /* 設置圖片最大高度 */
+    width: 100%; /* 設置圖片寬度為容器寬度 */
+    height: auto; /* 保持原始比例 */
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .image:hover {
+    transform: scale(1.1);
+  }
+  
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  
+  .modal-content {
+    margin: auto;
+    display: block;
+    max-width: 80%;
+    max-height: 80%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .close {
+    color: white;
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+}
+

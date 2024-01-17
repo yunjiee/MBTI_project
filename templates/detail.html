@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人格類型介紹</title>
+  <!-- 在 mbti.html 中 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body>
+  <div id="navbar">
+    <div id="menuToggle" onclick="toggleSidebar()">&#9776;</div>
+    <div id="logo">--MBTI--</div>
+    <div id="theme">
+      <a href="detail.html">類型介紹</a>
+      <a href="data_support.html">數據支持</a>
+      <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
+      <!-- Add more themes as needed -->
+    </div>
+  </div>
+  
+  <!-- 新增 sidebar -->
+  <div id="sidebar">
+    <a href="detail.html">類型介紹</a>
+    <a href="data_support.html">數據支持</a>
+    <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
+    <!-- Add more themes as needed -->
+  </div>
+
+  <div class="image-container">
+    <div class="image-row">
+      <img src="pictures/1.jpg" alt="Image 1" class="image" onclick="showImage(this)">
+      <img src="pictures/2.jpg" alt="Image 2" class="image" onclick="showImage(this)">
+    </div>
+    <div class="image-row">
+      <img src="pictures/3.jpg" alt="Image 3" class="image" onclick="showImage(this)">
+      <img src="pictures/4.jpg" alt="Image 4" class="image" onclick="showImage(this)">
+    </div>
+    <div class="image-row">
+      <img src="pictures/nf.jpg" alt="Image 1" class="image" onclick="showImage(this)">
+      <img src="pictures/nt.jpg" alt="Image 2" class="image" onclick="showImage(this)">
+    </div>
+    <div class="image-row">
+      <img src="pictures/sj.jpg" alt="Image 3" class="image" onclick="showImage(this)">
+      <img src="pictures/sp.jpg" alt="Image 4" class="image" onclick="showImage(this)">
+    </div>
+    <div class="modal" id="myModal">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <img class="modal-content" id="modalImage">
+    </div>
+  </div>
+
+</body>
+</html>
