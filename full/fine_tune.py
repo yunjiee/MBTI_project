@@ -82,7 +82,8 @@ def main():
     parser.add_argument("--eval_batch_size", default=8, type=int)#評估時的批次大小
     parser.add_argument("--learning_rate", default=5e-5, type=float)#學習率
 
-    parser.add_argument("--num_train_epochs", default=3, type=int)
+    ############################parser.add_argument("--num_train_epochs", default=3, type=int) 太少了
+    parser.add_argument("--num_train_epochs", default=300, type=int)
     parser.add_argument("--warmup_proportion", default=0.1, type=float)
     parser.add_argument("--no_cuda", action='store_true')
 
@@ -159,6 +160,7 @@ def main():
     num_train_optimization_steps = None
     if args.do_train:
         num_train_optimization_steps = int(
+            #train_examples=530多行
             len(train_examples) / args.train_batch_size / args.gradient_accumulation_steps) * args.num_train_epochs
         print("num_train_optimization_steps")
         if args.local_rank != -1:

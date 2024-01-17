@@ -47,7 +47,8 @@ class DataProcessor(object):
     def _read_tsv(cls, input_file, quotechar=None):
         """Reads a tab separated value file.使用逗號分隔"""
         with open(input_file, "r", encoding="utf-8") as f:
-            reader = csv.reader(f) #使用逗號分隔
+            #reader = csv.reader(f, quotechar=quotechar)
+            reader = csv.reader(f)
             lines = []
             for line in reader:
                 if len(line) == 2:
@@ -93,10 +94,10 @@ class PersonalityProcessor(DataProcessor):
                 labels_list.append(i.label)
                 #print("標籤在其中")
         return labels_list
-
+#除以分成幾段，也就是一次送進去17比
     #創建例子的方法
     def create_examples(self, lines, set_type):
-        print(f"一共執行幾行 : {len(lines)}")
+        print(f"一共執行幾行: {len(lines)}")
         examples = [] #設一個空list
         for (i, line) in enumerate(lines):
             print(f"準備行數 {i}: 內容{line}")
@@ -119,7 +120,9 @@ class PersonalityProcessor(DataProcessor):
             #舉例:用於簡單序列分類任務的數據結構
             examples.append(InputExample(guid=id_num, text=text, label=label))
         return examples
-        
+    
+#self 不是一个传递给方法的参数，而是一个在方法定义中用来引用对象本身的约定
+       
 '''
 #data_dir = "./MBTI_project/full/data"
 data_dir = "/content/drive/My Drive/full/data"
