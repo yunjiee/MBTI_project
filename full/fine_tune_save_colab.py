@@ -1,4 +1,4 @@
-%%writefile '/content/drive/My Drive/full/fine_tune_save.py'
+#%%writefile '/content/drive/My Drive/full/fine_tune_save.py'
 from __future__ import absolute_import, division, print_function
 
 #用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
@@ -258,7 +258,7 @@ def main():
                 prev_checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{prev_epoch}.pt')
                 save_checkpoint(model, optimizer, prev_epoch, prev_checkpoint_path, loss_history)
             print("第{}週期 訓練完成".format(epoch))
-    
+
     ####### 如果成功執行，它会将训练过程中得到的模型和相关配置保存到指定的目录中，並可以重新使用這數據 #######
     #如果不是在分布式训练环境中（local_rank == -1），或者如果是在分布式训练环境中的主进程（torch.distributed.get_rank() == 0），那么执行后续的代码块（比如保存模型）
     if args.do_train and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
