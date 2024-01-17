@@ -1,10 +1,10 @@
-#%%writefile '/content/drive/My Drive/full/fine_tune_save.py'
+%%writefile '/content/drive/My Drive/full/fine_tune_save.py'
 from __future__ import absolute_import, division, print_function
 
 #用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
 #!pip install pytorch-pretrained-bert
 
-
+import matplotlib.pyplot as plt
 import argparse #解析命令行参数 =>运行程序时从命令行指定这些参数
 import csv
 import os
@@ -80,9 +80,8 @@ def main():
     parser.add_argument("--eval_batch_size", default=8, type=int)#評估時的批次大小
     parser.add_argument("--learning_rate", default=5e-5, type=float)#學習率
 
-    parser.add_argument("--num_train_epochs", default=3, type=int) #執行的次數
+    parser.add_argument("--num_train_epochs", default=13, type=int) #執行的次數
     parser.add_argument("--warmup_proportion", default=0.1, type=float)
-    parser.add_argument("--no_cuda", action='store_true')
 
     parser.add_argument("--local_rank", type=int, default=-1)
     parser.add_argument('--seed', type=int, default=42)
@@ -103,15 +102,12 @@ def main():
 
     ##################### 設定設備(cpu或gpu) #####################
     #device = torch.device("cpu")
-    if args.local_rank == -1 or args.no_cuda:
-        device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
-        n_gpu = torch.cuda.device_count()
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        print('使用GPU')
     else:
-        torch.cuda.set_device(args.local_rank)
-        device = torch.device("cuda", args.local_rank)
-        n_gpu = 1
-        # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
-        torch.distributed.init_process_group(backend='nccl')
+        device = torch.device("cpu")
+        print('使用CPU')
 
 
     ####################### 梯度累积步骤设置: #####################
@@ -123,8 +119,6 @@ def main():
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-    if n_gpu > 0:
-        torch.cuda.manual_seed_all(args.seed)
 
     #检查训练和评估标志：这部分代码确保至少进行训练(do_train)或评估(do_eval)中的一个
     if not args.do_train and not args.do_eval:
@@ -179,19 +173,22 @@ def main():
             print("Error saving checkpoint:", e)
     # 在开始训练之前加载检查点
     last_epoch = 0
-    checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
+    checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{prev_epoch}.pt')
 
     if os.path.exists(checkpoint_path):
+
         last_epoch = load_checkpoint(model, optimizer, checkpoint_path)
-        print(last_epoch)
+        print('last_epoch的次數',last_epoch)
     else:
         print(f"检查点文件 {checkpoint_path} 不存在，从头开始训练。")
 
     global_step = 0
+    print("主程序中的 checkpoint 路径:", checkpoint_path)
 
-    checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
     # 调用load_checkpoint函数来加载检查点并继续训练
-    start_epoch = load_checkpoint(model, optimizer, checkpoint_path)
+    start_epoch = load_checkpoint(model, optimizer, checkpoint_path)+1
+    print('start_epoch的次數',start_epoch)
+
     ### 模型訓練 ###
     if args.do_train:
         ##### 準備使用的訓練數據 ####
@@ -248,13 +245,20 @@ def main():
                     global_step += 1
                 # 计算每个训练周期的平均损失
                 print("訓練完成")
-                
+
             avg_loss = tr_loss / nb_tr_steps
             loss_history.append(avg_loss)
-            checkpoint_path = os.path.join(args.output_dir, 'checkpoint.pt')
+             # 保存当前周期的检查点
+            checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{epoch}.pt')
             save_checkpoint(model, optimizer, epoch, checkpoint_path, loss_history)
-            print("第{}週期 訓練完成".format(epoch))
 
+            # 如果不是第一个周期，再保存上一个周期的检查点
+            if epoch > 1:
+                prev_epoch = epoch - 1
+                prev_checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{prev_epoch}.pt')
+                save_checkpoint(model, optimizer, prev_epoch, prev_checkpoint_path, loss_history)
+            print("第{}週期 訓練完成".format(epoch))
+    
     ####### 如果成功執行，它会将训练过程中得到的模型和相关配置保存到指定的目录中，並可以重新使用這數據 #######
     #如果不是在分布式训练环境中（local_rank == -1），或者如果是在分布式训练环境中的主进程（torch.distributed.get_rank() == 0），那么执行后续的代码块（比如保存模型）
     if args.do_train and (args.local_rank == -1 or torch.distributed.get_rank() == 0):
@@ -341,6 +345,6 @@ def main():
             for key in result.keys():
                 writer.write("%s = %s\n" % (key, str(result[key])))
 
-
 if __name__ == "__main__":
     main()
+    # 在训练完成后绘制损失历史图表

@@ -35,5 +35,30 @@ function checkAndSubmit() {
 function toggleSidebar() {
     var sidebar = document.getElementById("sidebar");
     sidebar.style.width = sidebar.style.width === "250px" ? "0" : "250px";
-  }
+}
+  
+// 在 detail.html 中的 <script> 區塊中
+document.addEventListener('DOMContentLoaded', function () {
+    const photoItems = document.querySelectorAll('.photo-item img');
+  
+    photoItems.forEach(function (photo) {
+      photo.addEventListener('click', function () {
+        enlargeImage(photo);
+      });
+    });
+  
+    function enlargeImage(image) {
+      const enlargedImage = document.createElement('div');
+      enlargedImage.classList.add('enlarged-image');
+      
+      const clonedImage = image.cloneNode(true);
+      enlargedImage.appendChild(clonedImage);
+      
+      document.body.appendChild(enlargedImage);
+  
+      enlargedImage.addEventListener('click', function () {
+        document.body.removeChild(enlargedImage);
+      });
+    }
+  });
   
