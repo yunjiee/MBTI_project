@@ -3,14 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>結果頁面</title>
-  <!-- 在 mbti.html 中 -->
+  <title>MBTI</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
   <div id="resultMessage">
-    你的人格類型為: {{ prediction }}
+    {% if prediction == 'enfj' %}
+      你的人格類型為 ENFJ
+    {% elif prediction == 'enfp' %}
+      你的人格類型為 ENFP
+    {% elif prediction == 'entj' %}
+      你的人格類型為 ENTJ
+    {% elif prediction == 'entp' %}
+      你的人格類型為 ENTP
+    {% if prediction == 'esfj' %}
+      你的人格類型為 ESFJ
+    {% elif prediction == 'esfp' %}
+      你的人格類型為 ESFP
+    {% elif prediction == 'estj' %}
+      你的人格類型為 ESTJ
+    {% elif prediction == 'estp' %}
+      你的人格類型為 ESTP
+    {% if prediction == 'infj' %}
+      你的人格類型為 INFJ
+    {% elif prediction == 'infp' %}
+      你的人格類型為 INFP
+    {% elif prediction == 'intj' %}
+      你的人格類型為 INTJ
+    {% elif prediction == 'intp' %}
+      你的人格類型為 INTP
+    {% if prediction == 'isfj' %}
+      你的人格類型為 ISFJ
+    {% elif prediction == 'isfp' %}
+      你的人格類型為 ISFP
+    {% elif prediction == 'istj' %}
+      你的人格類型為 ISTJ
+    {% elif prediction == 'istp' %}
+      你的人格類型為 ISTP
+    {% else %}
+      未知的人格類型
+    {% endif %}
   </div>
 
   <!-- 這裡可以添加其他結果頁面的內容 -->

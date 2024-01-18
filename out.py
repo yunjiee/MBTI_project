@@ -75,7 +75,7 @@ if __name__ == "__main__":
     #csv_file_path = "data_personality/enfj_data.csv"  # 替换为您的CSV文件路径 ####使用者輸入貼文欄位變數
     #column_name = "Content"  # 替换为文本所在列的列名
     #texts = preprocess_csv(csv_file_path, column_name)  ##因為使用者只會輸入一篇貼文，所以將輸入直接變成一個list就好
-    texts=["Istj (male) and I were best friends and he used to say that I am his sounding board and used to talk to me everyday (unlike ISTJs). When we were friends I was going through a rough patch in my personal life and had trust issues. This is the reason why I was reluctant to let my guard down before anyone. He took it on himself and convinced me that he indeed had my good interests at heart and he will do anything to prove that goodness exists and wanted me to have a good life. We became best friends but due to some external circumstances and other duties which he had towards his family, due to which he cut of all contact with me.This has just made my trust issues worse. Everytime I try and confront him, he says I was his best friend and friendship was deep. Is this true?"]
+    texts=[]
     # texts = preprocess_csv(csv_file_path)
 
     predictions = predict_text(model, tokenizer, texts)
