@@ -257,8 +257,8 @@ def main():
                 #tr_loss 随着每个训练周期逐渐减少，表明模型正在学习并提高其预测的准确性。(是整个训练周期（epoch）内的总损失)
                 tr_loss += loss.item()
                 print("tr_loss              ",tr_loss)
+                
                  # 计算每个训练周期的平均损失
-
                 nb_tr_examples += input_ids.size(0)
                 nb_tr_steps += 1
                 if (step + 1) % args.gradient_accumulation_steps == 0:
@@ -267,11 +267,13 @@ def main():
                     global_step += 1
                     avg_loss = tr_loss / nb_tr_steps if nb_tr_steps != 0 else 0
                     loss_history.append(avg_loss)
-
+                # 在每个周期结束后存储该周期的平均损失
+                if (epoch + 1) % 1 == 0:  # 在每个周期结束后存储，这里的 1 表示每个周期结束后都存储
                     # 写入每个周期的平均损失到 CSV 文件
                     with open(loss_csv_file, mode='a', newline='') as file:
                         writer = csv.writer(file)
                         writer.writerow([epoch, avg_loss])
+
                 # 每三个epoch保存一次检查点
                 if (epoch + 1) % 3 == 0:
                     checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{epoch}.pt')
