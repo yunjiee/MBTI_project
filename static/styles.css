@@ -212,10 +212,18 @@ body {
     display: grid;
     grid-template-columns: repeat(2, 1fr); /*將圖片分成 4 列 */
     gap: 10px; /* 設定圖片之間的間距 */
+    margin-top: 150px;
   }
   
   .image-row {
     display: flex;
+  }
+
+  h3 {
+    background-color: #fbded9; /* 設定文字的底色 */
+    padding: 10px; /* 添加內邊距以增加底色範圍 */
+    margin: 0; /* 去除預設的 margin */
+    border-radius: 10px; /* 設定圓角的大小 */
   }
   
   .image {
@@ -232,6 +240,14 @@ body {
     transform: scale(1.1);
   }
   
+  .image-item {
+    text-align: center;
+  }
+  
+  .image-item h3 {
+    margin-top: 10px; /* 調整標題與圖片的間距 */
+  }
+
   .modal {
     display: none;
     position: fixed;
@@ -266,3 +282,38 @@ body {
   }
 }
 
+.data_support-image-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 150px;
+}
+
+.data_support-image-row {
+  display: flex;
+}
+
+.data_support-image-item {
+  text-align: center;
+}
+
+.data_support-content {
+  background-color: #fbded9;
+  padding: 10px;
+  margin: 0;
+  border-radius: 10px;
+}
+
+.data_support-image {
+  max-width: 250px;
+  max-height: 300px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.data_support-image:hover {
+  transform: scale(1.1);
+}
