@@ -13,8 +13,8 @@
     <div id="menuToggle" onclick="toggleSidebar()">&#9776;</div>
     <div id="logo">--MBTI--</div>
     <div id="theme">
-      <a href="detail.html">類型介紹</a>
-      <a href="data_support.html">數據支持</a>
+      <a href="{{ url_for('detail') }}">類型介紹</a>
+      <a href="{{ url_for('data_support') }}">數據支持</a>
       <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
       <!-- Add more themes as needed -->
     </div>
@@ -22,11 +22,35 @@
   
   <!-- 新增 sidebar -->
   <div id="sidebar">
-    <a href="detail.html">類型介紹</a>
-    <a href="data_support.html">數據支持</a>
+    <a href="{{ url_for('detail') }}">類型介紹</a>
+    <a href="{{ url_for('data_support') }}">數據支持</a>
     <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
     <!-- Add more themes as needed -->
   </div>
+  <div class="data_support-image-container">
+    <div class="data_support-image-row">
+        <div class="data_support-image-item">
+            <h3 class="data_support-content">這是圖片1的說明文字</h3>
+            <img src="static/pictures/1.jpg" alt="圖片1" class="data_support-image" onclick="showImage(this)">
+        </div>
 
+        <div class="data_support-image-item">
+            <img src="static/pictures/2.jpg" alt="圖片2" class="data_support-image" onclick="showImage(this)">
+            <h3 class="data_support-content">這是圖片2的說明文字</h3>
+        </div>
+    </div>
+
+    <div class="data_support-image-row">
+        <div class="data_support-image-item">
+            <h3 class="data_support-content">這是圖片3的說明文字</h3>
+            <img src="static/pictures/3.jpg" alt="圖片3" class="data_support-image" onclick="showImage(this)">
+        </div>
+
+        <div class="data_support-image-item">
+            <img src="static/pictures/4.jpg" alt="圖片4" class="data_support-image" onclick="showImage(this)">
+            <h3 class="data_support-content">這是圖片4的說明文字</h3>
+        </div>
+    </div>
+  </div>
 </body>
 </html>
