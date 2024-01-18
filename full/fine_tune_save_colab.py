@@ -1,16 +1,17 @@
-#%%writefile '/content/drive/My Drive/full/fine_tune_save.py'
+#%%writefile '/content/drive/My Drive/full/fine_tune_save_colab.py'
 from __future__ import absolute_import, division, print_function
 
 #用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
 #!pip install pytorch-pretrained-bert
 
 import argparse #解析命令行参数 =>运行程序时从命令行指定这些参数
-import csv
+import subprocess
 import os
 import random
 import glob
 import numpy as np
 import torch
+import csv
 
 from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
                               TensorDataset)
@@ -39,6 +40,8 @@ from features import convert_examples_to_features
 from dataloader import get_train_dataloader, get_eval_dataloader, get_label_ids
 from bert_model import get_bert_model, get_optimizer
 
+
+loss_csv_file = '/content/drive/My Drive/full/output/loss_file.csv'
 def find_latest_checkpoints(output_dir, num_to_keep=2):
     checkpoint_files = glob.glob(os.path.join(output_dir, 'checkpoint_epoch_*.pt'))
     checkpoints = [(os.path.basename(path), int(os.path.basename(path).split('_')[-1].split('.')[0])) for path in checkpoint_files]
@@ -49,18 +52,33 @@ def remove_old_checkpoints(output_dir, checkpoints_to_keep):
     all_checkpoints = set(glob.glob(os.path.join(output_dir, 'checkpoint_epoch_*.pt')))
     checkpoints_to_keep = set(os.path.join(output_dir, cp[0]) for cp in checkpoints_to_keep)
     for checkpoint in all_checkpoints - checkpoints_to_keep:
-        os.remove(checkpoint)
+            os.remove(checkpoint)
+    try:
+        print(f"Deleted checkpoint: {checkpoint}")
+        subprocess.run(["trash-empty"], check=True)
+    except Exception as e:
+        print(f"Error deleting checkpoint {checkpoint}: {e}")
 
 #在开始训练的循环之前，检查是否有现有的检查点并加载它。
 def load_checkpoint(model, optimizer, path):
     if os.path.isfile(path):
         print("加载检查点 '{}'".format(path))
-        checkpoint = torch.load(path)
+        #checkpoint = torch.load(path)
+        checkpoint = torch.load(path, map_location=torch.device("cpu") if not torch.cuda.is_available() else None)
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
+        
+        if not os.path.isfile(loss_csv_file):
+            with open(loss_csv_file, mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(['Epoch', 'Average Loss'])
         return checkpoint['epoch']
     else:
         print("没有找到检查点 '{}'".format(path))
+        # 创建新的训练损失记录文件
+        with open(loss_csv_file, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Epoch', 'Average Loss'])
         return 0
 
 def main():
@@ -72,17 +90,17 @@ def main():
     #调用定义了一个命令行参数的规则，包括如何解析该参数以及该参数的一些元数据
     #参数名称以两个连字符（--）开头，它被视为一个可选参数(是那些在命令行中可以省略的参数。意味着在命令行中使用这些参数时，需要使用其完整的名称)
     #--沒修改，默认为 "./"（当前目录）
-    parser.add_argument("--data_dir", default="/content/drive/My Drive/full/data1/", type=str)#數據目錄
+    parser.add_argument("--data_dir", default="/content/drive/My Drive/full/data/", type=str)#數據目錄
     ##data_dire資料夾內要有: train.csv 用于训练，dev.csv 或 eval.csv 用于模型评估
     parser.add_argument("--bert_model", default="bert-base-uncased", type=str)#使用的bert模型
-    parser.add_argument("--output_dir", default="/content/drive/My Drive/full/output1/", type=str)#輸出目錄
+    parser.add_argument("--output_dir", default="/content/drive/My Drive/full/output/", type=str)#輸出目錄
     #output_dir資料夾: 训练过程中生成的模型和输出数据将保存在这个目录中
 
     parser.add_argument("--cache_dir", default="", type=str)#緩存目錄
     parser.add_argument("--max_seq_length", default=128, type=int)#最大序列長度
 
     parser.add_argument("--do_train", action='store_true', default=True)#是否經過訓練
-    #, default=True 帶鰾不管有沒有do_train，都默認有，並執行程式
+    #, default=True 代表不管有沒有do_train，都默認有，並執行程式
     parser.add_argument("--do_eval", action='store_true', default=True)#是否進行評估
     parser.add_argument("--do_lower_case", action='store_true')#是否將文本轉為小寫
 
@@ -90,7 +108,7 @@ def main():
     parser.add_argument("--eval_batch_size", default=8, type=int)#評估時的批次大小
     parser.add_argument("--learning_rate", default=5e-5, type=float)#學習率
 
-    parser.add_argument("--num_train_epochs", default=13, type=int) #執行的次數
+    parser.add_argument("--num_train_epochs", default=300, type=int) #執行的次數
     parser.add_argument("--warmup_proportion", default=0.1, type=float)
 
     parser.add_argument("--local_rank", type=int, default=-1)
@@ -181,13 +199,13 @@ def main():
         except Exception as e:
             print("Error saving checkpoint:", e)
     # 在开始训练之前加载检查点
-    last_epoch = 0
     global_step = 0
-    
+
     latest_checkpoints = find_latest_checkpoints(args.output_dir)
     if latest_checkpoints:
         latest_checkpoint_path = os.path.join(args.output_dir, latest_checkpoints[0][0])
-        start_epoch = load_checkpoint(model, optimizer, latest_checkpoint_path) + 1
+        start_epoch = load_checkpoint(model, optimizer, latest_checkpoint_path)
+        
         print('继续训练从 epoch', start_epoch, '开始')
     else:
         start_epoch = 0
@@ -247,18 +265,27 @@ def main():
                     optimizer.step() #更新模型參數
                     optimizer.zero_grad() #清除梯度信息，为下一个批次做准备
                     global_step += 1
-                # 计算每个训练周期的平均损失
-                print("訓練完成")
+                    avg_loss = tr_loss / nb_tr_steps if nb_tr_steps != 0 else 0
+                    loss_history.append(avg_loss)
 
-            avg_loss = tr_loss / nb_tr_steps
-            loss_history.append(avg_loss)
-            # 保存当前周期的检查点
-            checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{epoch}.pt')
-            save_checkpoint(model, optimizer, epoch, checkpoint_path, loss_history)
-            # 检查并保留最新的两个检查点，删除旧的
-            latest_checkpoints = find_latest_checkpoints(args.output_dir)
-            remove_old_checkpoints(args.output_dir, latest_checkpoints)
-            print("第{}週期 訓練完成".format(epoch))
+                    # 写入每个周期的平均损失到 CSV 文件
+                    with open(loss_csv_file, mode='a', newline='') as file:
+                        writer = csv.writer(file)
+                        writer.writerow([epoch, avg_loss])
+                # 每三个epoch保存一次检查点
+                if (epoch + 1) % 3 == 0:
+                    checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{epoch}.pt')
+                    save_checkpoint(model, optimizer, epoch, checkpoint_path, loss_history)
+                    # 检查并保留最新的两个检查点，删除旧的
+                    latest_checkpoints = find_latest_checkpoints(args.output_dir)
+                    remove_old_checkpoints(args.output_dir, latest_checkpoints)
+                print("第{}週期 訓練完成".format(epoch))
+
+        final_checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{epoch}.pt')
+        save_checkpoint(model, optimizer, start_epoch + 1, final_checkpoint_path, loss_history)
+        # 检查并保留最新的两个检查点，删除旧的
+        latest_checkpoints = find_latest_checkpoints(args.output_dir)
+        remove_old_checkpoints(args.output_dir, latest_checkpoints)
 
     ####### 如果成功執行，它会将训练过程中得到的模型和相关配置保存到指定的目录中，並可以重新使用這數據 #######
     #如果不是在分布式训练环境中（local_rank == -1），或者如果是在分布式训练环境中的主进程（torch.distributed.get_rank() == 0），那么执行后续的代码块（比如保存模型）
