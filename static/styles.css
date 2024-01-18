@@ -219,7 +219,7 @@ body {
     display: flex;
   }
 
-  h3 {
+  .detail-single{
     background-color: #fbded9; /* 設定文字的底色 */
     padding: 10px; /* 添加內邊距以增加底色範圍 */
     margin: 0; /* 去除預設的 margin */
@@ -284,29 +284,38 @@ body {
 
 .data_support-image-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* grid-template-columns: repeat(2, 1fr); */
   gap: 10px;
   margin-top: 150px;
 }
 
 .data_support-image-row {
   display: flex;
+  justify-content: space-around; /* 根據需要調整元素之間的空間 */
+  align-items: center; /* 根據需要調整元素在垂直方向的對齊方式 */
+  background-color: rgba(255, 255, 255, 0.9); /* 設置區塊底色 */
+  padding: 10px; /* 設置內邊距 */
+  margin-top: 10px;
+  width: 1000px;
+  height: 300px;
+  margin-left: auto; /* 將左邊距自動調整為 auto，使元素居中 */
+  margin-right: auto; /* 將右邊距自動調整為 auto，使元素居中 */
 }
+
 
 .data_support-image-item {
   text-align: center;
 }
 
 .data_support-content {
-  background-color: #fbded9;
   padding: 10px;
   margin: 0;
   border-radius: 10px;
 }
 
 .data_support-image {
-  max-width: 250px;
-  max-height: 300px;
+  max-width: 500px;
+  max-height: 600px;
   width: 100%;
   height: auto;
   object-fit: contain;
@@ -316,4 +325,16 @@ body {
 
 .data_support-image:hover {
   transform: scale(1.1);
+}
+
+/*result.html*/
+
+#resultMessage {
+  font-size: 40px;
+  text-align: center;
+  display: flex;
+  align-items: flex-start; /* 將文字在垂直方向上靠上 */
+  justify-content: center; /* 將文字在水平方向上置中 */
+  height: 80vh; /* 可根據需要調整元素高度 */
+  font-weight: bold;
 }
