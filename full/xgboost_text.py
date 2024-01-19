@@ -50,15 +50,18 @@ def read_and_preprocess_data(csv_path):
     # 创建标签映射
     return labels ,data_texts
 
-def four_vector(new_texts):
-    group_accuracies = {}
-    for group in ["E/I", "N/S", "F/T", "P/J"]:
-        group_indices = [i for i, label in enumerate(labels) if label.startswith(group)]
-        group_y_test = [y_test[i] for i in group_indices]
-        group_y_pred = [y_pred[i] for i in group_indices]
-        group_accuracy = accuracy_score(group_y_test, group_y_pred)
-        group_accuracies[group] = group_accuracy
-        print(f"{group} Accuracy: %.2f%%" % (group_accuracy * 100.0))
+def evaluate_model_for_group(model, X_test, y_test, group):
+    inverse_label_mapping = {k: i for i, k in label_mapping.items()}
+
+    # 过滤出特定类型的数据
+    group_indices = [i for i, label in enumerate(y_test) if label_mapping_inverse[y_test[i]].startswith(group)]
+    group_X_test = X_test[group_indices]
+    group_y_test = [y_test[i] for i in group_indices]
+    # 预测特定类型的数据
+    group_y_pred = model.predict(group_X_test)
+    # 计算准确率
+    group_accuracy = accuracy_score(group_y_test, group_y_pred)
+    return group_accuracy
 
 
 def evaluate_model(model, X_test, y_test):
@@ -83,7 +86,7 @@ def new_data(new_texts):
     return new_texts
 
 # 调用 train_model 函数训练模型
-csv_path = 'D:/project/MBTI_project/full/data/processed_all_posts_data.csv'
+csv_path = 'D:/project/MBTI_project/full/data/data.csv'
 labels ,data_texts =read_and_preprocess_data(csv_path)
 label_mapping = {'infp': 0, 'infj': 1, "intj": 2, "intp": 3, "isfp": 4, "isfj": 5, "istj": 6, "istp": 7, "enfp": 8, "enfj": 9, "entj": 10, "entp": 11, "esfp": 12, "esfj": 13, "estj": 14, "estp": 15}
 # 将标签转换为数字
@@ -98,7 +101,14 @@ model = XGBClassifier(objective='multi:softprob', num_class=16)
 model.fit(X_train, y_train)
 # 评估模型
 evaluate_model(model, X_test, y_test)
+# 计算每个MBTI类型的准确率
+for group in ["E/I", "N/S", "F/T", "P/J"]:
+    group_accuracy = evaluate_model_for_group(model, X_test, y_test, group)
+    print(f"{group} Accuracy: %.2f%%" % (group_accuracy * 100.0))
+
 # 预测新数据
 new_texts = ["so i had this idea for a thread a couple of days ago , and then today i saw jonkay asking for one , how' s that for synchronicity astralflame ?"]
 predicted_labels = predict(model, new_texts)
 print("Predicted MBTI type:", predicted_labels)
+group_accuracy = evaluate_model_for_group(model, X_test, y_test, group)
+print(f"{group} Accuracy: %.2f%%" % (group_accuracy * 100.0))
