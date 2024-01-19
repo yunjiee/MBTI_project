@@ -50,7 +50,6 @@ def remove_old_checkpoints(output_dir, checkpoints_to_keep):
 def load_checkpoint(model, optimizer, path):
     if os.path.isfile(path):
         print("加载检查点'{}'".format(path))
-        #checkpoint = torch.load(path)
         checkpoint = torch.load(path, map_location=torch.device("cpu") if not torch.cuda.is_available() else None)
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
