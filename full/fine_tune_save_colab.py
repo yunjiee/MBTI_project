@@ -1,9 +1,6 @@
 #%%writefile '/content/drive/My Drive/full/fine_tune_save_colab.py'
 from __future__ import absolute_import, division, print_function
 
-#用於确保代码在不同版本的Python中具有一致的行为(维护同时需要在Python 2和Python 3环境下运行的代码非常有用)
-#!pip install pytorch-pretrained-bert
-
 import argparse #解析命令行参数 =>运行程序时从命令行指定这些参数
 import subprocess
 import os
@@ -13,28 +10,18 @@ import numpy as np
 import torch
 import csv
 
-from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
-                              TensorDataset)
+from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,TensorDataset)
 from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm, trange
 
 from torch.nn import CrossEntropyLoss, MSELoss
-#pip install scipy
 from scipy.stats import pearsonr, spearmanr
-#pip install scikit-learn
 from sklearn.metrics import matthews_corrcoef, f1_score
 
-#from transformers import BertTokenizer, BertForSequenceClassification, AdamW
 from transformers import BertTokenizer, BertForSequenceClassification
 from torch.optim import AdamW
 
-#from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE, WEIGHTS_NAME, CONFIG_NAME
-#from pytorch_pretrained_bert.modeling import BertForSequenceClassification, BertConfig
-#from pytorch_pretrained_bert.tokenization import BertTokenizer
-#from pytorch_pretrained_bert.optimization import BertAdam, WarmupLinearSchedule
-
 from compute_metrics import compute_metrics
-#from data_processor import InputExample, DataProcessor, PersonalityProcessor
 from processor import InputExample, DataProcessor, PersonalityProcessor
 from features import convert_examples_to_features
 from dataloader import get_train_dataloader, get_eval_dataloader, get_label_ids
@@ -52,22 +39,22 @@ def remove_old_checkpoints(output_dir, checkpoints_to_keep):
     all_checkpoints = set(glob.glob(os.path.join(output_dir, 'checkpoint_epoch_*.pt')))
     checkpoints_to_keep = set(os.path.join(output_dir, cp[0]) for cp in checkpoints_to_keep)
     for checkpoint in all_checkpoints - checkpoints_to_keep:
+        try:
             os.remove(checkpoint)
-    try:
-        print(f"Deleted checkpoint: {checkpoint}")
-        subprocess.run(["trash-empty"], check=True)
-    except Exception as e:
-        print(f"Error deleting checkpoint {checkpoint}: {e}")
+            print(f"Deleted checkpoint: {checkpoint}")
+            subprocess.run(["trash-empty"], check=True)
+        except Exception as e:
+            print(f"Error deleting checkpoint {checkpoint}: {e}")
 
 #在开始训练的循环之前，检查是否有现有的检查点并加载它。
 def load_checkpoint(model, optimizer, path):
     if os.path.isfile(path):
-        print("加载检查点 '{}'".format(path))
+        print("加载检查点'{}'".format(path))
         #checkpoint = torch.load(path)
         checkpoint = torch.load(path, map_location=torch.device("cpu") if not torch.cuda.is_available() else None)
         model.load_state_dict(checkpoint['state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer'])
-        
+
         if not os.path.isfile(loss_csv_file):
             with open(loss_csv_file, mode='w', newline='') as file:
                 writer = csv.writer(file)
@@ -84,7 +71,6 @@ def load_checkpoint(model, optimizer, path):
 def main():
     #### 創建一個解析器，用於處理命令行參數 ####
     ###################### 参数解析 (argparse)，可以靈活的取用外部參數 ######################
-
     parser = argparse.ArgumentParser()
     #### 添加各種命令行參數 ####
     #调用定义了一个命令行参数的规则，包括如何解析该参数以及该参数的一些元数据
@@ -100,7 +86,6 @@ def main():
     parser.add_argument("--max_seq_length", default=128, type=int)#最大序列長度
 
     parser.add_argument("--do_train", action='store_true', default=True)#是否經過訓練
-    #, default=True 代表不管有沒有do_train，都默認有，並執行程式
     parser.add_argument("--do_eval", action='store_true', default=True)#是否進行評估
     parser.add_argument("--do_lower_case", action='store_true')#是否將文本轉為小寫
 
@@ -136,7 +121,6 @@ def main():
         device = torch.device("cpu")
         print('使用CPU')
 
-
     ####################### 梯度累积步骤设置: #####################
     if args.gradient_accumulation_steps < 1:
         raise ValueError("Invalid gradient_accumulation_steps parameter: {}, should be >= 1".format(args.gradient_accumulation_steps))
@@ -155,11 +139,9 @@ def main():
         os.makedirs(args.output_dir)
         print(f"输出目录 {args.output_dir} 不存在，已创建。")
 
-
     #代码使用 PersonalityProcessor 来处理数据，获取训练样本和标签列表。这些标签用于模型训练过程中的分类任务。
     processor = PersonalityProcessor(args.mode)
     label_list = processor.get_labels(args.data_dir)
-
     print("label_list               ",label_list)
     num_labels = len(label_list)
 
@@ -200,12 +182,11 @@ def main():
             print("Error saving checkpoint:", e)
     # 在开始训练之前加载检查点
     global_step = 0
-
     latest_checkpoints = find_latest_checkpoints(args.output_dir)
     if latest_checkpoints:
         latest_checkpoint_path = os.path.join(args.output_dir, latest_checkpoints[0][0])
         start_epoch = load_checkpoint(model, optimizer, latest_checkpoint_path)
-        
+
         print('继续训练从 epoch', start_epoch, '开始')
     else:
         start_epoch = 0
@@ -256,32 +237,33 @@ def main():
 
                 #tr_loss 随着每个训练周期逐渐减少，表明模型正在学习并提高其预测的准确性。(是整个训练周期（epoch）内的总损失)
                 tr_loss += loss.item()
-                print("tr_loss              ",tr_loss)
-                
+                print("tr_loss是整个训练周期（epoch）内的总损失",tr_loss)
                  # 计算每个训练周期的平均损失
                 nb_tr_examples += input_ids.size(0)
                 nb_tr_steps += 1
+
                 if (step + 1) % args.gradient_accumulation_steps == 0:
                     optimizer.step() #更新模型參數
                     optimizer.zero_grad() #清除梯度信息，为下一个批次做准备
                     global_step += 1
-                    avg_loss = tr_loss / nb_tr_steps if nb_tr_steps != 0 else 0
-                    loss_history.append(avg_loss)
-                # 在每个周期结束后存储该周期的平均损失
-                if (epoch + 1) % 1 == 0:  # 在每个周期结束后存储，这里的 1 表示每个周期结束后都存储
-                    # 写入每个周期的平均损失到 CSV 文件
-                    with open(loss_csv_file, mode='a', newline='') as file:
-                        writer = csv.writer(file)
-                        writer.writerow([epoch, avg_loss])
+                ## 计算整个周期的平均损失
+                avg_loss = tr_loss / nb_tr_steps if nb_tr_steps != 0 else 0
+                loss_history.append(avg_loss)
+            # 在每个周期结束后存储该周期的平均损失
+            if (epoch + 1) % 1 == 0:  # 在每个周期结束后存储，这里的 1 表示每个周期结束后都存储
+                # 写入每个周期的平均损失到 CSV 文件
+                with open(loss_csv_file, mode='a', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow([epoch, avg_loss])
 
-                # 每三个epoch保存一次检查点
-                if (epoch + 1) % 3 == 0:
-                    checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{epoch}.pt')
-                    save_checkpoint(model, optimizer, epoch, checkpoint_path, loss_history)
-                    # 检查并保留最新的两个检查点，删除旧的
-                    latest_checkpoints = find_latest_checkpoints(args.output_dir)
-                    remove_old_checkpoints(args.output_dir, latest_checkpoints)
-                print("第{}週期 訓練完成".format(epoch))
+            # 每三个epoch保存一次检查点
+            if (epoch + 1) % 3 == 0:
+                checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{epoch}.pt')
+                save_checkpoint(model, optimizer, epoch, checkpoint_path, loss_history)
+                # 检查并保留最新的两个检查点，删除旧的
+                latest_checkpoints = find_latest_checkpoints(args.output_dir)
+                remove_old_checkpoints(args.output_dir, latest_checkpoints)
+            print("第{}週期 訓練完成".format(epoch))
 
         final_checkpoint_path = os.path.join(args.output_dir, f'checkpoint_epoch_{epoch}.pt')
         save_checkpoint(model, optimizer, start_epoch + 1, final_checkpoint_path, loss_history)
@@ -301,7 +283,6 @@ def main():
         # 在此处定义模型权重文件的名称
         output_model_file = os.path.join(args.output_dir, "pytorch_model.bin")
         output_config_file = os.path.join(args.output_dir, "config.json")
-        #
         #保存模型的状态字典（state_dict），这包含了模型的所有权重和偏差参数。
         torch.save(model_to_save.state_dict(), output_model_file)
         model_to_save.config.to_json_file(output_config_file) #将模型的配置保存为 JSON 文件
@@ -340,7 +321,6 @@ def main():
             label_ids = label_ids.to(device)
 
             with torch.no_grad():
-                #logits = model(input_ids, segment_ids, input_mask, labels=None)
                 outputs = model(input_ids, attention_mask=input_mask, token_type_ids=segment_ids)
                 logits = outputs.logits
 
@@ -368,7 +348,6 @@ def main():
         result['eval_loss'] = eval_loss
         result['global_step'] = global_step
         result['loss'] = loss
-        #print(result)
         ##輸出結果
         output_eval_file = os.path.join(args.output_dir, "eval_results.txt")
         with open(output_eval_file, "w") as writer:
