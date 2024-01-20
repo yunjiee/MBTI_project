@@ -11,11 +11,14 @@
 <body>
   <div id="navbar">
     <div id="menuToggle" onclick="toggleSidebar()">&#9776;</div>
-    <div id="logo">--MBTI--</div>
+    <div id="logo">
+      <a href="{{ url_for('index') }}"> 
+        --MBTI--
+      </a> 
+    </div> 
     <div id="theme">
       <a href="{{ url_for('detail') }}">類型介紹</a>
       <a href="{{ url_for('data_support') }}">數據支持</a>
-      <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
       <!-- Add more themes as needed -->
     </div>
   </div>
@@ -24,7 +27,6 @@
   <div id="sidebar">
     <a href="{{ url_for('detail') }}">類型介紹</a>
     <a href="{{ url_for('data_support') }}">數據支持</a>
-    <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
     <!-- Add more themes as needed -->
   </div>
 
@@ -32,21 +34,21 @@
     <div class="image-row">
       <div class="image-item">
         <h3 class="detail-single">能量態度（外向，E / 內向，I）</h3>
-        <img src="static/pictures/1.jpg" alt="Image 1" class="image" onclick="showImage(this)">
+        <img src="static/pictures/IE.jpg" alt="Image 1" class="image" onclick="showImage(this)">
       </div>
       <div class="image-item">
         <h3 class="detail-single">處理資訊（實感，S / 直覺，N）</h3>
-        <img src="static/pictures/2.jpg" alt="Image 2" class="image" onclick="showImage(this)">
+        <img src="static/pictures/NS.jpg" alt="Image 2" class="image" onclick="showImage(this)">
       </div>
     </div>
     <div class="image-row">
       <div class="image-item">
         <h3 class="detail-single">決策思維（理性，T / 感性，F）</h3>
-        <img src="static/pictures/3.jpg" alt="Image 3" class="image" onclick="showImage(this)">
+        <img src="static/pictures/FT.jpg" alt="Image 3" class="image" onclick="showImage(this)">
       </div>
       <div class="image-item">
         <h3 class="detail-single">生活方式（系統，J / 彈性，P）</h3>
-        <img src="static/pictures/4.jpg" alt="Image 4" class="image" onclick="showImage(this)">
+        <img src="static/pictures/PJ.jpg" alt="Image 4" class="image" onclick="showImage(this)">
       </div>
     </div>
     <div class="image-row">

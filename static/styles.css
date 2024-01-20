@@ -3,7 +3,7 @@ body {
   text-align: center;
   padding: 20px;
   margin: 0;
-  background-image: url('flowers.jpg');
+  background-image: url('background-mbti.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -30,6 +30,12 @@ body {
   font-size: 1.5em;
   font-weight: bold;
   margin-right: 0;
+}
+
+#logo a {
+  text-decoration: none; /* 移除底線 */
+  color: inherit; /* 使用父元素的文字顏色，即不改變文字顏色 */
+  cursor: pointer; /* 讓鼠標在元素上顯示為指針，表示它是可點擊的 */
 }
 
 #menuToggle {
@@ -328,13 +334,42 @@ body {
 }
 
 /*result.html*/
-
 #resultMessage {
+  background-color: #ffffffe1;
   font-size: 40px;
   text-align: center;
   display: flex;
-  align-items: flex-start; /* 將文字在垂直方向上靠上 */
-  justify-content: center; /* 將文字在水平方向上置中 */
-  height: 80vh; /* 可根據需要調整元素高度 */
+  flex-direction: column; /* 將子元素垂直排列 */
+  align-items: stretch; /* 將子元素在垂直方向上填滿容器 */
+  justify-content: center;
+  height: 80vh;
   font-weight: bold;
+}
+
+#resultMessage > div:first-child {
+  margin-bottom: 10px; /* 調整底部間距，可以根據需要調整數值 */
+}
+
+.description-pullout-nt {
+  font-size: 30px;
+  border-left: 3px solid #88619a;
+  background-color: #f3eff5;
+}
+
+.description-pullout-nf {
+  font-size: 30px;
+  border-left: 3px solid #7eb481;
+  background-color: #eff5f0;
+}
+
+.description-pullout-sj {
+  font-size: 30px;
+  border-left: 3px solid #7eaac4;
+  background-color: #eff2f5;
+}
+
+.description-pullout-sp {
+  font-size: 30px;
+  border-left: 3px solid #e0c26e;
+  background-color: #f5f3ef;
 }
