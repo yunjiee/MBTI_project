@@ -11,11 +11,14 @@
 <body>
   <div id="navbar">
     <div id="menuToggle" onclick="toggleSidebar()">&#9776;</div>
-    <div id="logo">--MBTI--</div>
+    <div id="logo">
+      <a href="{{ url_for('index') }}"> 
+        --MBTI--
+      </a> 
+    </div>
     <div id="theme">
       <a href="{{ url_for('detail') }}">類型介紹</a>
       <a href="{{ url_for('data_support') }}">數據支持</a>
-      <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
       <!-- Add more themes as needed -->
     </div>
   </div>
@@ -24,7 +27,6 @@
   <div id="sidebar">
     <a href="{{ url_for('detail') }}">類型介紹</a>
     <a href="{{ url_for('data_support') }}">數據支持</a>
-    <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
     <!-- Add more themes as needed -->
   </div>
   <div class="data_support-image-container">
@@ -33,12 +35,12 @@
         <h3 class="data_support-content">資料集：6400筆(各個人格類型爬取400筆資料)</h3>
       </div>
       <div class="data_support-image-item">
-        <img src="static/type_num.jpg" alt="圖片1" class="data_support-image" onclick="showImage(this)">
+        <img src="static/pictures/type_num.jpg" alt="圖片1" class="data_support-image" onclick="showImage(this)">
       </div>
     </div>
     <div class="data_support-image-row">
       <div class="data_support-image-item">
-        <img src="static/category_num.jpg" alt="圖片2" class="data_support-image" onclick="showImage(this)">
+        <img src="static/pictures/category_num.jpg" alt="圖片2" class="data_support-image" onclick="showImage(this)">
       </div>
       <div class="data_support-image-item">
         <h3 class="data_support-content">各傾向資料筆數</h3>
