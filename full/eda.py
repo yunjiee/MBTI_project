@@ -17,7 +17,7 @@ Q2.是否要以number => 如果以單詞數量呈現的話，就要統整出各�
 '''
 ##################################
 #收集到的全部資料
-file_path = './MBTI_project/full/data/processed_all_posts_data.csv'
+file_path = 'D:/project/MBTI_project/full/data/processed_all_posts_data.csv'
 data = pd.read_csv(file_path)
 
 ####
@@ -45,6 +45,7 @@ def plot_mbti_distribution(data):
     # 设置 x 轴標籤
     plt.xlabel('type',fontsize=16)
     plt.ylabel('content', fontsize=16)
+    plt.title('MBTI data number', fontsize=24)
     # 顯示圖形
     plt.show()
 
@@ -77,6 +78,31 @@ def plot_mbti_dimensions(data):
     ###########說不定可以把照片全部一起出來
     ##看看要不要以字數的方式計算
     #是以content文本的方式計算
+def mix(data):
+    data['ie'] = data['type'].apply(lambda t: 'i' if 'i' in t else 'e')
+    data['ns'] = data['type'].apply(lambda t: 'n' if 'n' in t else 's')
+    data['ft'] = data['type'].apply(lambda t: 'f' if 'f' in t else 't')
+    data['pj'] = data['type'].apply(lambda t: 'p' if 'p' in t else 'j')
+
+    ie_count = data['ie'].value_counts()
+    ns_count = data['ns'].value_counts()
+    ft_count = data['ft'].value_counts()
+    pj_count = data['pj'].value_counts()
+
+    # 创建四个新的特征列 ie、ns、ft 和 pj，这些特征代表了性格类型的不同维度（I/E、N/S、F/T、P/J）
+    categories = ['i', 'e', 'n', 's', 'f', 't', 'p', 'j']
+    counts = [ie_count['i'], ie_count['e'], ns_count['n'], ns_count['s'], ft_count['f'], ft_count['t'], pj_count['p'], pj_count['j']]
+    colors =['skyblue', 'skyblue', 'lightgreen', 'lightgreen', 'lavender', 'lavender', 'lightyellow', 'lightyellow']
+    for i, count in enumerate(counts):
+        plt.text(i, count, str(count), ha='center', va='bottom')
+
+    # 创建条形图
+    plt.bar(categories, counts,color=colors,width=0.6)
+    plt.xlabel('Categories')
+    plt.ylabel('Counts')
+    plt.title('Counts by Categories')
+    plt.show()
+
 
 import csv
 
@@ -105,4 +131,6 @@ getstat(file_path)
 plot_mbti_distribution(data)
 
 # 绘制四个维度的分布图
-plot_mbti_dimensions(data)
+#plot_mbti_dimensions(data)
+
+mix(data)
