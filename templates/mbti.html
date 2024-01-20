@@ -12,11 +12,14 @@
 
 <div id="navbar">
   <div id="menuToggle" onclick="toggleSidebar()">&#9776;</div>
-  <div id="logo">--MBTI--</div>
+  <div id="logo">
+    <a href="{{ url_for('index') }}"> 
+      --MBTI--
+    </a> 
+  </div>
   <div id="theme">
     <a href="{{ url_for('detail') }}">類型介紹</a>
     <a href="{{ url_for('data_support') }}">數據支持</a>
-    <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
     <!-- Add more themes as needed -->
   </div>
 </div>
@@ -25,7 +28,6 @@
 <div id="sidebar">
   <a href="{{ url_for('detail') }}">類型介紹</a>
   <a href="{{ url_for('data_support') }}">數據支持</a>
-  <a href="#" onclick="navigateToTheme('theme3')">主題3</a>
   <!-- Add more themes as needed -->
 </div>
 
