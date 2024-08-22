@@ -6,7 +6,7 @@ import re
 
 app = Flask(__name__)
 
-model_path = "output/"
+model_path = "d:/project/MBTI_project/full/output/"
 model, tokenizer = load_model_and_tokenizer(model_path)
 
 @app.route('/')
