@@ -29,19 +29,8 @@ def predict_text(model, tokenizer, texts):
 
     predictions = torch.argmax(logits, dim=-1)
     predictions = [id_to_label[id] for id in predictions.numpy()]
-
     return predictions
-'''
-if __name__ == "__main__":
-    model_path = f"D:/project/MBTI_project/full/output/"  # 替换为您的模型路径
-    model, tokenizer = load_model_and_tokenizer(model_path)
 
-    csv_file_path = "D:/project/MBTI_project/full/data/dev.csv"  # 替换为您的CSV文件路径
-    column_name = "Content"  # 替换为文本所在列的列名
-    texts = preprocess_csv(csv_file_path, column_name)
-    predictions = predict_text(model, tokenizer, texts)
-    print(predictions)
-'''
 #直接給句子測試
 if __name__ == "__main__":
     model_path = f"D:/project/MBTI_project/full/output/"  # 替换为您的模型路径
@@ -54,3 +43,15 @@ if __name__ == "__main__":
     texts = preprocess_text(texts.append(sentence))
     predictions = predict_text(model, tokenizer, texts)
     print(predictions)
+
+'''
+if __name__ == "__main__":
+    model_path = f"D:/project/MBTI_project/full/output/"  # 替换为您的模型路径
+    model, tokenizer = load_model_and_tokenizer(model_path)
+
+    csv_file_path = "D:/project/MBTI_project/full/data/dev.csv"  # 替换为您的CSV文件路径
+    column_name = "Content"  # 替换为文本所在列的列名
+    texts = preprocess_csv(csv_file_path, column_name)
+    predictions = predict_text(model, tokenizer, texts)
+    print(predictions)
+'''
