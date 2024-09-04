@@ -4,7 +4,7 @@ from transformers import BertForSequenceClassification
 #from pytorch_pretrained_bert.modeling import BertForSequenceClassification
 #from pytorch_pretrained_bert.optimization import BertAdam
 from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE, WEIGHTS_NAME, CONFIG_NAME
-from torch.optim import AdamW
+from torch.optim import AdamW #優化器
 
 #獲取bert模型 
 def get_bert_model(args, num_labels):
@@ -35,7 +35,7 @@ def get_optimizer(args, model, num_train_optimization_steps):
                   eps=args.adam_epsilon)
     
     '''
-    #創建BertAdam優化器
+    #創建BertAdam優化器ˋ
     optimizer = BertAdam(optimizer_grouped_parameters,
                          lr=args.learning_rate,
                          warmup=args.warmup_proportion,
