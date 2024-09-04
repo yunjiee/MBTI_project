@@ -32,8 +32,8 @@ from torch.utils.data import (DataLoader, RandomSampler, SequentialSampler,
                               TensorDataset)
 from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm, trange
-
 from torch.nn import CrossEntropyLoss, MSELoss
+
 #pip install scipy
 from scipy.stats import pearsonr, spearmanr
 #pip install scikit-learn
@@ -47,7 +47,6 @@ from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE, WE
 #from pytorch_pretrained_bert.optimization import BertAdam, WarmupLinearSchedule
 
 from compute_metrics import compute_metrics
-#from data_processor import InputExample, DataProcessor, PersonalityProcessor
 from processor import InputExample, DataProcessor, PersonalityProcessor
 from features import convert_examples_to_features
 from dataloader import get_train_dataloader, get_eval_dataloader, get_label_ids
