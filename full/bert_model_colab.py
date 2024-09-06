@@ -21,7 +21,7 @@ def get_optimizer(args, model, num_train_optimization_steps):
     #選取模型的參數
     #args 參數 =>用來配置模型和指定類別的數量(num_train_optimization_steps)
     # 如果 t_total 未提供，则设置默认值
-    param_optimizer = list(model.named_parameters())
+    #param_optimizer = list(model.named_parameters())
     #權重衰減的參數
     no_decay = ['bias', 'LayerNorm.weight']
     #分組模型參數，應用不同的權重衰減

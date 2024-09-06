@@ -11,10 +11,8 @@ def get_train_dataloader(args, train_features):
     all_input_mask = torch.tensor([f.input_mask for f in train_features], dtype=torch.long)
     all_segment_ids = torch.tensor([f.segment_ids for f in train_features], dtype=torch.long)
     all_label_ids = torch.tensor([f.label_id for f in train_features], dtype=torch.long)
-    #創建數據庫    
-    train_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
-    train_data.to_excel("D:/project/MBTI_project/data/train_data_ids.xlsx", index=False)
     #輸入張量和標籤和數據一起，方便模型訓練
+    train_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
     #採樣數據
     if args.local_rank == -1:
         train_sampler = RandomSampler(train_data)
@@ -36,7 +34,6 @@ def get_eval_dataloader(args, eval_features):
     
     #評估 
     eval_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
-    eval_data.to_excel("D:/project/MBTI_project/data/eval_data_ids.xlsx", index=False)
     # Run prediction for full data
     eval_sampler = SequentialSampler(eval_data)
     eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=args.eval_batch_size)

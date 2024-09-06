@@ -5,13 +5,9 @@ import re
 class InputFeatures(object):
     def __init__(self, input_ids, input_mask, segment_ids, label_id):
         self.input_ids = input_ids #把前後句子，分為0或是1來判斷
-        print('input_ids1          ',input_ids)
         self.input_mask = input_mask #标记序列中哪些位置是真实Token，哪些是填充的
-        print('input_mask1        ',input_mask)
         self.segment_ids = segment_ids #区分两个序列的段ID（在处理两个序列时使用）
-        print('segment_ids1            ',segment_ids)
         self.label_id = label_id #样本的标签ID
-        print('label_id1            ',label_id)
         
 
 def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer):
@@ -20,7 +16,6 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
     label_map = {label : i for i, label in enumerate(label_list)}
     features = []
     for (ex_index, example) in enumerate(examples):
-        print('example.text          ',example.text)
         #segments = re.split(r'[.!?,]', example.text)  # 這裡使用了句號、問號和驚嘆號作為分段標記，你可以根據需要調整
         #for segment in segments:
         #    segment = segment.strip()  # 去除分段文本兩側的空白
@@ -34,7 +29,6 @@ def convert_examples_to_features(examples, label_list, max_seq_length, tokenizer
         #####我在想是不是需要把每句每具的斷開########
         #####他的斷詞tokenizer套件是補需要修改#######
         tokens = tokenizer.tokenize(example.text)
-        print('最原始的tokens             ',tokens)
 
         if len(tokens) > max_seq_length - 2:
             tokens = tokens[:(max_seq_length - 2)]
