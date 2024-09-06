@@ -24,6 +24,7 @@ def get_optimizer(args, model, num_train_optimization_steps):
     #param_optimizer = list(model.named_parameters())
     #權重衰減的參數
     no_decay = ['bias', 'LayerNorm.weight']
+
     #分組模型參數，應用不同的權重衰減
     optimizer_grouped_parameters = [
         #對於weight參數
