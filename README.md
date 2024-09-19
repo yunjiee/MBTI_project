@@ -10,7 +10,7 @@ MBTI 性格指標
 
 結果:  
 所提模型在正確預測所有四個類型方面達到 0.47 的準確率，在正確預測至少兩個類型方面達到 0.86 的準確率。此外，我們還研究了微調的 BERT 模型在性格特定語言生成中的可能應用。這是現代心理學和智能共情系統的重要任務。  
-![image](https://github.com/yunjiee/MBTI_project/tree/main/static/pictures/1.jpg)
+![image](https://github.com/yunjiee/MBTI_project/static/pictures/1.jpg)
 
 
 參考資料  
