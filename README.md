@@ -12,9 +12,9 @@ MBTI 性格指標
 結果:  
 所提模型在正確預測所有四個類型方面達到 0.47 的準確率，在正確預測至少兩個類型方面達到 0.86 的準確率。此外，我們還研究了微調的 BERT 模型在性格特定語言生成中的可能應用。這是現代心理學和智能共情系統的重要任務。  
 
-待精進方向
-=>可以再透過Accuracy、AUC、Confusion Matrix(標準化混淆矩陣)或是Logistic Regression 去驗證結果
-=>「文章向量」就是把一篇文章轉成一串數字（向量），讓電腦可以運算、比較、分類。
+待精進方向  
+=> 可以再透過Accuracy、AUC、Confusion Matrix(標準化混淆矩陣)或是Logistic Regression 去驗證結果  
+=>「文章向量」就是把一篇文章轉成一串數字（向量），讓電腦可以運算、比較、分類。  
 
 <img src="https://github.com/yunjiee/MBTI_project/blob/main/static/pictures/1.jpg" width="50%">
 
