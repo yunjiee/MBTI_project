@@ -5,7 +5,7 @@
 ![Transformers](https://img.shields.io/badge/HuggingFace-Transformers-yellow)
 ![Flask](https://img.shields.io/badge/Flask-Web%2B-green)
 
-> **一句話簡介**：本專案基於 **BERT 預訓練語言模型** 與 **自然語言處理 (NLP)** 技術，透過分析社群平台上的使用者留言文本，自動預測並分類使用者的 MBTI 十六型人格。
+> **簡介**：本專案基於 **BERT 預訓練語言模型** 與 **自然語言處理 (NLP)** 技術，透過分析社群平台上的使用者留言文本，自動預測並分類使用者的 MBTI 十六型人格。
 
 <img src="https://github.com/yunjiee/MBTI_project/blob/main/static/pictures/1.jpg" width="50%">
 
